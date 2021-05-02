@@ -26,8 +26,8 @@ db.define_table(
     Field('last_name', requires=IS_NOT_EMPTY()),
     Field('user_email', default=get_user_email),
 )
-db.contact.user_email.writable = db.contact.user_email.readable = False
-db.contact.id.readable = db.contact.id.writable = False
+db.user.user_email.writable = db.user.user_email.readable = False
+db.user.id.readable = db.user.id.writable = False
 
 db.define_table(
     'post',
