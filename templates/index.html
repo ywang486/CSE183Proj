@@ -1,5 +1,22 @@
 [[extend 'layout.html']]
 
 <div class="section">
-   Hello.
+   <h1 class="title">Here are some Good Vibes</h1>
+   <a href="[[=URL('create_post')]]" class="button is-primary">Create a Post</a>
+   <table class="table is-striped is-fullwidth">
+      <tr>
+         <th>User Id</th>
+         <th>Creation Time</th>
+         <th>Content</th>
+         <th>type</th>
+      </tr>
+      [[for row in rows:]]
+      <tr>
+         <td>[[=row.user_id]]</td>
+         <td>[[=row.time]]</td>
+         <td>[[=row.note]]</td>
+         <td>[[=row.type]]</td>
+      </tr>
+      [[pass]]
+   </table>
 </div>

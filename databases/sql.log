@@ -45,3 +45,52 @@ CREATE TABLE "post"(
     "type" CHAR(512)
 );
 success!
+timestamp: 2021-05-02T10:13:01.346524
+ALTER TABLE "auth_user" ADD "username" CHAR(512) UNIQUE;
+timestamp: 2021-05-02T10:13:29.016636
+ALTER TABLE "auth_user" ADD "username" CHAR(512) UNIQUE;
+timestamp: 2021-05-02T10:22:54.322409
+ALTER TABLE "post" ADD "user_email" CHAR(512);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
