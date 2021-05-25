@@ -81,6 +81,33 @@
           </div>
         </div>
       </nav>
+      <div v-if="r.add_comment_mode" class = "container block">
+        <div class="form">
+          <div class="field">
+            <label class="label"></label>
+            <div class="control">
+              <textarea class="textarea input" v-model="r.add_comment_content"></textarea>
+            </div>
+          </div>
+          <div class="field">
+            <div class="control">
+              <input type="submit" @click="add_comment(r._idx)" value="Comment" class="button is-primary">
+              <input type="submit" @click="set_add_comment_status(r._idx, false)" value="Cancel" class="button is-warning">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="box" style="background-color:rgba(224, 224, 224, 0.418);" v-for="(comment, index) in r.comment_content">
+        <div class="content">
+          <p style="color:rgba(145, 145, 145, 0.767)">
+            {{r.comment_name[index]}}
+          </p>
+
+          <p>
+            {{comment}}
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </div>

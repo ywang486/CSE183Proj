@@ -182,3 +182,13 @@ def add_comment():
         comment_name=name,
         comment_email=email,
     )
+
+@action('delete_post')
+@action.uses(url_signer.verify(), auth.user, db)
+def delete_post():
+    id = request.params.get('id')
+    assert id is not None
+    # post = (db(db.post.id == id).select().as_list())[0]
+    # print(post['likes'])
+    db(db.post.id == id).delete()
+    return "ok"

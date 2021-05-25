@@ -137,12 +137,15 @@ let init = (app) => {
                 id: id,
                 comment_content: app.vue.rows[row_idx].add_comment_content,
             }).then(function (response) {
+            app.vue.rows[row_idx].comment_content = app.vue.rows[row_idx].comment_content || [];
+            app.vue.rows[row_idx].comment_name = app.vue.rows[row_idx].comment_name || [];
+            app.vue.rows[row_idx].comment_email = app.vue.rows[row_idx].comment_email || [];
             app.vue.rows[row_idx].comment_content.push(app.vue.rows[row_idx].add_comment_content);
             app.vue.rows[row_idx].comment_name.push(response.data.comment_name);
             app.vue.rows[row_idx].comment_email.push(response.data.comment_email);
             app.enumerate(app.vue.rows);
             app.vue.rows[row_idx].add_comment_content = "";
-            app.set_add_status(false);
+            app.set_add_comment_status(row_idx, false);
         });
     };
     app.set_add_comment_status = function (row_idx, new_status) {
@@ -158,6 +161,8 @@ let init = (app) => {
         add_post: app.add_post,
         delete_post: app.delete_post,
         modify_post: app.modify_post,
+        set_add_comment_status: app.set_add_comment_status,
+        add_comment: app.add_comment,
 
         // Complete as you see fit.
     };
