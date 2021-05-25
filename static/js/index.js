@@ -131,6 +131,7 @@ let init = (app) => {
      };
 
      app.add_comment = function (row_idx) {
+        console.log("in add comment");
         let id = app.vue.rows[row_idx].id;
         axios.post(add_comment_url,
             {
@@ -148,8 +149,37 @@ let init = (app) => {
             app.set_add_comment_status(row_idx, false);
         });
     };
+
+    app.delete_comment = function(row_idx, comment_idx) {
+        console.log("in delete comment");
+        let row_id = app.vue.rows[row_idx].id;
+//        let comment_id = app.vue.rows[row_idx].comment_content[comment_idx].id;
+        console.log("row id is: ", row_id);
+        console.log("comment idx is: ", comment_idx);
+        axios.get(delete_comment_url, {params: {row_id: row_id, comment_id: comment_idx}}).then(function (response) {
+            for (let i = 0; i < app.vue.rows.length; i++) {
+                if (app.vue.rows[i].id === row_id) {
+                    for (let j = 0; j < app.vue.rows[i].comment_content.length; j++) {
+                        if (j === comment_idx) {
+                            console.log("in if statement");
+                            app.vue.rows[i].comment_content.splice(j, 1);
+                            app.vue.rows[i].comment_email.splice(j, 1);
+                            app.vue.rows[i].comment_name.splice(j, 1);
+                            app.enumerate(app.vue.rows);
+                            break;
+                        }
+                    }
+//                    app.vue.rows.splice(i, 1);
+//                    app.enumerate(app.vue.rows);
+//                    break;
+                }
+            }
+            });
+    };
+
     app.set_add_comment_status = function (row_idx, new_status) {
-        app.vue.rows[row_idx].add_comment_mode = new_status;
+//        app.vue.rows[row_idx].add_comment_mode = new_status;
+        Vue.set(app.vue.rows[row_idx], 'add_comment_mode', new_status);
     };
 
     // This contains all the methods.
@@ -163,6 +193,7 @@ let init = (app) => {
         modify_post: app.modify_post,
         set_add_comment_status: app.set_add_comment_status,
         add_comment: app.add_comment,
+        delete_comment: app.delete_comment,
 
         // Complete as you see fit.
     };

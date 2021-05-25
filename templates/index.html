@@ -67,7 +67,7 @@
                   <i v-if="!r.thumbs_down" @click="modify_post(r._idx, current_email, false, true)" class="fa fa-thumbs-o-down fa-2x"></i>
                 </span>
               </span>
-          </span>
+            </span>
           </div>
           <div>
             <div v-if="r.show_likers">the likers of the post:  {{r.likes}}</div>
@@ -106,6 +106,9 @@
           <p>
             {{comment}}
           </p>
+        </div>
+        <div v-if="r.comment_email[index] === current_email" class="level-item">
+            <button @click="delete_comment(r._idx, index)" class="button is-danger"> <i class="fa fa-trash fa-2x"></i></button>
         </div>
       </div>
     </div>

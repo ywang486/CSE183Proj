@@ -155,6 +155,7 @@ def delete_post():
 @action('add_comment', method="POST")
 @action.uses(url_signer.verify(), db)
 def add_comment():
+    print("in add comment")
     id = request.json.get('id')
     comment_content = request.json.get('comment_content')
     r = db(db.auth_user.email == get_user_email()).select().first()
@@ -183,12 +184,39 @@ def add_comment():
         comment_email=email,
     )
 
-@action('delete_post')
+@action('delete_comment')
 @action.uses(url_signer.verify(), auth.user, db)
-def delete_post():
-    id = request.params.get('id')
-    assert id is not None
+def delete_comment():
+
+    comment_id = int(request.params.get('comment_id'))
+    row_id = request.params.get('row_id')
+    assert comment_id is not None
+    assert row_id is not None
+
+    # print("row id: ", row_id)
     # post = (db(db.post.id == id).select().as_list())[0]
     # print(post['likes'])
-    db(db.post.id == id).delete()
+    post = (db(db.post.id == row_id).select().as_list())[0]
+    print("comment content before: ", post['comment_content'])
+    print("comment name before: ", post['comment_name'])
+    print("comment email before: ", post['comment_email'])
+    for i, comment in enumerate(post["comment_content"]):
+        # print("i is: ", i)
+        # print("tuype of i: ", type(i))
+        # print("comment id: ", comment_id)
+        # print("type of comment id: ", type(comment_id))
+        if i == comment_id:
+            # print("in if statement")
+            del post['comment_content'][i]
+            del post['comment_name'][i]
+            del post['comment_email'][i]
+    print("comment content after: ", post['comment_content'])
+    print("comment name after: ", post['comment_name'])
+    print("comment email after: ", post['comment_email'])
+    db.post.update_or_insert(
+        (db.post.id == row_id),
+        comment_content=post['comment_content'],
+        comment_name=post['comment_name'],
+        comment_email=post['comment_email']
+    )
     return "ok"
