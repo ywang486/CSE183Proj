@@ -29,38 +29,123 @@ from py4web import action, request, abort, redirect, URL
 from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 from py4web.utils.url_signer import URLSigner
-from .models import get_user_email, get_time
+from .models import get_user_email
 
 url_signer = URLSigner(session)
 
-from py4web.utils.form import Form, FormStyleBulma
-from .common import Field
-
 @action('index')
-@action.uses(db, auth, 'index.html')
+@action.uses(db, auth.user, 'index.html')
 def index():
-    rows = db(db.post).select()
-    print("User:", get_user_email())
-    return dict(rows=rows, url_signer=url_signer)
+    return dict(
+        # COMPLETE: return here any signed URLs you need.
+        my_callback_url = URL('my_callback', signer=url_signer),
+        load_posts_url=URL('load_posts', signer=url_signer),
+        add_post_url=URL('add_post', signer=url_signer),
+        modify_post_url=URL('modify_post', signer=url_signer),
+        delete_post_url=URL('delete_post', signer=url_signer),
+    )
 
-@action('create_post', method=["GET", "POST"]) # the :int means: please convert this to an int.
-@action.uses(db, session, auth.user, 'create_post.html')
-def add():
-    # form = Form(db.post, csrf_session=session, formstyle=FormStyleBulma)
-    # if form.accepted:
-    #     redirect(URL('index'))
-    time = get_time()
-    user_id = auth.current_user.get('id')
-    assert user_id is not None
-    print("user id is", user_id)
-    form = Form([Field('note', 'text'), Field('type')], csrf_session=session,
-                formstyle=FormStyleBulma)
-    if form.accepted:
-        db.post.insert(
-            user_id=user_id,
-            time=time,
-            note=form.vars["note"],
-            type=form.vars["type"]
+@action('load_posts')
+@action.uses(url_signer.verify(),db)
+def load_posts():
+    rows = db(db.post).select().as_list()
+    r = db(db.auth_user.email == get_user_email()).select().first()
+    email = r.email if r is not None else "Unknown"
+    # for row in rows:
+    #     print(row)
+    # print("email in load_posts: ", email)
+    return dict(
+        rows=rows,
+        email=email,
+    )
+
+# @action('get_rating')
+# @action.uses(url_signer.verify(), db, auth.user)
+# def load_rat():
+#     """Returns the rating for a user and an image."""
+#     image_id = request.params.get('image_id')
+#     row = db((db.stars.image == image_id) &
+#              (db.stars.rater == get_user())).select().first()
+#     rating = row.rating if row is not None else 0
+#     return dict(rating=rating)
+
+@action('add_post', method="POST")
+@action.uses(url_signer.verify(), auth.user, db)
+def add_post():
+    r = db(db.auth_user.email == get_user_email()).select().first()
+    name = r.first_name + " " + r.last_name if r is not None else "Unknown"
+    email = r.email if r is not None else "Unknown"
+    # print("email in add_post: ", email)
+    # test = ["tester@test.com", "nickcoopersf@gmail.com"]
+    nolikesordislikesyet = []
+    id = db.post.insert(
+        content=request.json.get('content'),
+        name=name,
+        email=email,
+        likes=nolikesordislikesyet,
+        dislikes=nolikesordislikesyet,
+        # likes=test,
+    )
+    return dict(
+        id=id,
+        name=name,
+        email=email,
+    )
+
+@action('modify_post', method='POST')
+@action.uses(url_signer.verify(), auth.user, db)
+def modify_post():
+    # print("in modify post")
+    id = request.json.get('id')
+    like = request.json.get('like')
+    add_to_list = request.json.get('add_to_list')
+    email = request.json.get('email')
+    # print("id: ", id)
+    # print("like: ", like)
+    # print("add_to_list: ", add_to_list)
+    # print("email: ", email)
+    assert id is not None and add_to_list is not None and like is not None and email is not None
+    # print("the post with correct id: ", db(db.post.id == id).select().as_list())
+    post = (db(db.post.id == id).select().as_list())[0]
+    # if (like == True && add_to_list == True):
+    likes = post['likes']
+    dislikes = post['dislikes']
+    if like:
+        if add_to_list:
+            likes.append(email)
+            # print("add to like list")
+        else:
+            likes.remove(email)
+        db.post.update_or_insert(
+            (db.post.id == id),
+            likes=likes,
         )
-        redirect(URL('index'))
-    return dict(form=form)
+    else:
+        if add_to_list:
+            dislikes.append(email)
+            # print("add to dislike list")
+        else:
+            dislikes.remove(email)
+        db.post.update_or_insert(
+            (db.post.id == id),
+            dislikes=dislikes,
+        )
+    return dict(
+        likes=likes,
+        dislikes=dislikes,
+    )
+    # elif (like == False & & add_to_list == True):
+    # elif (like == True & & add_to_list == False):
+    # elif (like == False & & add_to_list == False):
+
+
+
+@action('delete_post')
+@action.uses(url_signer.verify(), auth.user, db)
+def delete_post():
+    id = request.params.get('id')
+    assert id is not None
+    # post = (db(db.post.id == id).select().as_list())[0]
+    # print(post['likes'])
+    db(db.post.id == id).delete()
+    return "ok"
