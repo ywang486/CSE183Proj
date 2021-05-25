@@ -38,11 +38,13 @@ url_signer = URLSigner(session)
 def index():
     return dict(
         # COMPLETE: return here any signed URLs you need.
-        my_callback_url = URL('my_callback', signer=url_signer),
+        my_callback_url=URL('my_callback', signer=url_signer),
         load_posts_url=URL('load_posts', signer=url_signer),
         add_post_url=URL('add_post', signer=url_signer),
         modify_post_url=URL('modify_post', signer=url_signer),
         delete_post_url=URL('delete_post', signer=url_signer),
+        add_comment_url=URL('add_comment', signer=url_signer),
+        delete_comment_url=URL('delete_comment', signer=url_signer),
     )
 
 @action('load_posts')

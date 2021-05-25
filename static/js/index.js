@@ -130,6 +130,25 @@ let init = (app) => {
 ////        }
      };
 
+     app.add_comment = function (row_idx) {
+        let id = app.vue.rows[row_idx].id;
+        axios.post(add_comment_url,
+            {
+                id: id
+                comment_content: app.vue.row[row_idx].add_comment_content,
+            }).then(function (response) {
+            app.vue.rows[row_idx].comment_content.push(app.vue.row[row_idx].add_comment_content);
+            app.vue.rows[row_idx].comment_name.push(response.data.comment_name);
+            app.vue.rows[row_idx].comment_email.push(response.data.comment_email);
+            app.enumerate(app.vue.rows);
+            app.vue.rows[row_idx].add_comment_content = "";
+            app.set_add_status(false);
+        });
+    };
+    app.set_add_comment_status = function (row_idx, new_status) {
+        app.vue.rows[row_idx].add_comment_mode = new_status;
+    };
+
     // This contains all the methods.
     app.methods = {
         set_add_status: app.set_add_status,
@@ -160,6 +179,8 @@ let init = (app) => {
             app.vue.current_email = response.data.email;
             for (let i = 0; i < temprows.length; i++){
                 temprows[i].show_likers = false;
+                temprows[i].add_comment_mode = false;
+                temprows[i].add_comment_content = "";
                 if (temprows[i].likes !== undefined && temprows[i].likes.includes(app.vue.current_email)){
                     temprows[i].thumbs_up = true;
 //                    console.log(app.vue.rows[i]);
