@@ -53,23 +53,11 @@ def load_posts():
     rows = db(db.post).select().as_list()
     r = db(db.auth_user.email == get_user_email()).select().first()
     email = r.email if r is not None else "Unknown"
-    # for row in rows:
-    #     print(row)
-    # print("email in load_posts: ", email)
     return dict(
         rows=rows,
         email=email,
     )
 
-# @action('get_rating')
-# @action.uses(url_signer.verify(), db, auth.user)
-# def load_rat():
-#     """Returns the rating for a user and an image."""
-#     image_id = request.params.get('image_id')
-#     row = db((db.stars.image == image_id) &
-#              (db.stars.rater == get_user())).select().first()
-#     rating = row.rating if row is not None else 0
-#     return dict(rating=rating)
 
 @action('add_post', method="POST")
 @action.uses(url_signer.verify(), auth.user, db)
@@ -77,8 +65,6 @@ def add_post():
     r = db(db.auth_user.email == get_user_email()).select().first()
     name = r.first_name + " " + r.last_name if r is not None else "Unknown"
     email = r.email if r is not None else "Unknown"
-    # print("email in add_post: ", email)
-    # test = ["tester@test.com", "nickcoopersf@gmail.com"]
     nolikesordislikesyet = []
     id = db.post.insert(
         content=request.json.get('content'),
@@ -86,7 +72,6 @@ def add_post():
         email=email,
         likes=nolikesordislikesyet,
         dislikes=nolikesordislikesyet,
-        # likes=test,
     )
     return dict(
         id=id,
@@ -97,25 +82,17 @@ def add_post():
 @action('modify_post', method='POST')
 @action.uses(url_signer.verify(), auth.user, db)
 def modify_post():
-    # print("in modify post")
     id = request.json.get('id')
     like = request.json.get('like')
     add_to_list = request.json.get('add_to_list')
     email = request.json.get('email')
-    # print("id: ", id)
-    # print("like: ", like)
-    # print("add_to_list: ", add_to_list)
-    # print("email: ", email)
     assert id is not None and add_to_list is not None and like is not None and email is not None
-    # print("the post with correct id: ", db(db.post.id == id).select().as_list())
     post = (db(db.post.id == id).select().as_list())[0]
-    # if (like == True && add_to_list == True):
     likes = post['likes']
     dislikes = post['dislikes']
     if like:
         if add_to_list:
             likes.append(email)
-            # print("add to like list")
         else:
             likes.remove(email)
         db.post.update_or_insert(
@@ -125,7 +102,6 @@ def modify_post():
     else:
         if add_to_list:
             dislikes.append(email)
-            # print("add to dislike list")
         else:
             dislikes.remove(email)
         db.post.update_or_insert(
@@ -136,9 +112,6 @@ def modify_post():
         likes=likes,
         dislikes=dislikes,
     )
-    # elif (like == False & & add_to_list == True):
-    # elif (like == True & & add_to_list == False):
-    # elif (like == False & & add_to_list == False):
 
 
 
@@ -147,23 +120,17 @@ def modify_post():
 def delete_post():
     id = request.params.get('id')
     assert id is not None
-    # post = (db(db.post.id == id).select().as_list())[0]
-    # print(post['likes'])
     db(db.post.id == id).delete()
     return "ok"
 
 @action('add_comment', method="POST")
 @action.uses(url_signer.verify(), db)
 def add_comment():
-    print("in add comment")
     id = request.json.get('id')
     comment_content = request.json.get('comment_content')
     r = db(db.auth_user.email == get_user_email()).select().first()
     name = r.first_name + " " + r.last_name if r is not None else "Unknown"
     email = r.email if r is not None else "Unknown"
-    # print("email in add_post: ", email)
-    # test = ["tester@test.com", "nickcoopersf@gmail.com"]
-    nolikesordislikesyet = []
     post = (db(db.post.id == id).select().as_list())[0]
     if post['comment_content'] is not None:
         post['comment_content'].append(comment_content)
@@ -192,27 +159,13 @@ def delete_comment():
     row_id = request.params.get('row_id')
     assert comment_id is not None
     assert row_id is not None
-
-    # print("row id: ", row_id)
-    # post = (db(db.post.id == id).select().as_list())[0]
-    # print(post['likes'])
     post = (db(db.post.id == row_id).select().as_list())[0]
-    print("comment content before: ", post['comment_content'])
-    print("comment name before: ", post['comment_name'])
-    print("comment email before: ", post['comment_email'])
+
     for i, comment in enumerate(post["comment_content"]):
-        # print("i is: ", i)
-        # print("tuype of i: ", type(i))
-        # print("comment id: ", comment_id)
-        # print("type of comment id: ", type(comment_id))
         if i == comment_id:
-            # print("in if statement")
             del post['comment_content'][i]
             del post['comment_name'][i]
             del post['comment_email'][i]
-    print("comment content after: ", post['comment_content'])
-    print("comment name after: ", post['comment_name'])
-    print("comment email after: ", post['comment_email'])
     db.post.update_or_insert(
         (db.post.id == row_id),
         comment_content=post['comment_content'],
