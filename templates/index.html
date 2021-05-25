@@ -50,7 +50,12 @@
       <nav class="level">
         <!-- Left side -->
         <div class="level-left">
-          <div class="level-item"> 
+          <div class="level-item">
+            <div class="container block">
+              <button @click="set_add_comment_status(r._idx, true)" class="button is-primary">
+                <i class="fa fa-comment fa-fw"></i>
+              </button>
+            </div>
             <span @mouseleave="show_likers_out(r._idx)">
               <span @mouseenter="show_likers_over(r._idx)">
                 <span>
@@ -77,6 +82,7 @@
         </div>
       </nav>
     </div>
+  </div>
 </div>
 
 

@@ -151,3 +151,34 @@ def delete_post():
     # print(post['likes'])
     db(db.post.id == id).delete()
     return "ok"
+
+@action('add_comment', method="POST")
+@action.uses(url_signer.verify(), db)
+def add_comment():
+    id = request.json.get('id')
+    comment_content = request.json.get('comment_content')
+    r = db(db.auth_user.email == get_user_email()).select().first()
+    name = r.first_name + " " + r.last_name if r is not None else "Unknown"
+    email = r.email if r is not None else "Unknown"
+    # print("email in add_post: ", email)
+    # test = ["tester@test.com", "nickcoopersf@gmail.com"]
+    nolikesordislikesyet = []
+    post = (db(db.post.id == id).select().as_list())[0]
+    if post['comment_content'] is not None:
+        post['comment_content'].append(comment_content)
+        post['comment_name'].append(name)
+        post['comment_email'].append(email)
+    else:
+        post['comment_content'] = [comment_content]
+        post['comment_name'] = [name]
+        post['comment_email'] = [email]
+    db.post.update_or_insert(
+        (db.post.id == id),
+        comment_content=post['comment_content'],
+        comment_name=post['comment_name'],
+        comment_email=post['comment_email']
+    )
+    return dict(
+        comment_name=name,
+        comment_email=email,
+    )

@@ -134,10 +134,10 @@ let init = (app) => {
         let id = app.vue.rows[row_idx].id;
         axios.post(add_comment_url,
             {
-                id: id
-                comment_content: app.vue.row[row_idx].add_comment_content,
+                id: id,
+                comment_content: app.vue.rows[row_idx].add_comment_content,
             }).then(function (response) {
-            app.vue.rows[row_idx].comment_content.push(app.vue.row[row_idx].add_comment_content);
+            app.vue.rows[row_idx].comment_content.push(app.vue.rows[row_idx].add_comment_content);
             app.vue.rows[row_idx].comment_name.push(response.data.comment_name);
             app.vue.rows[row_idx].comment_email.push(response.data.comment_email);
             app.enumerate(app.vue.rows);
