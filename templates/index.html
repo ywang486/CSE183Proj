@@ -50,7 +50,12 @@
       <nav class="level">
         <!-- Left side -->
         <div class="level-left">
-          <div class="level-item"> 
+          <div class="level-item">
+            <div class="container block">
+              <button @click="set_add_comment_status(r._idx, true)" class="button is-primary">
+                <i class="fa fa-comment fa-fw"></i>
+              </button>
+            </div>
             <span @mouseleave="show_likers_out(r._idx)">
               <span @mouseenter="show_likers_over(r._idx)">
                 <span>
@@ -62,7 +67,7 @@
                   <i v-if="!r.thumbs_down" @click="modify_post(r._idx, current_email, false, true)" class="fa fa-thumbs-o-down fa-2x"></i>
                 </span>
               </span>
-          </span>
+            </span>
           </div>
           <div>
             <div v-if="r.show_likers">the likers of the post:  {{r.likes}}</div>
@@ -76,7 +81,38 @@
           </div>
         </div>
       </nav>
+      <div v-if="r.add_comment_mode" class = "container block">
+        <div class="form">
+          <div class="field">
+            <label class="label"></label>
+            <div class="control">
+              <textarea class="textarea input" v-model="r.add_comment_content"></textarea>
+            </div>
+          </div>
+          <div class="field">
+            <div class="control">
+              <input type="submit" @click="add_comment(r._idx)" value="Comment" class="button is-primary">
+              <input type="submit" @click="set_add_comment_status(r._idx, false)" value="Cancel" class="button is-warning">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="box" style="background-color:rgba(224, 224, 224, 0.418);" v-for="(comment, index) in r.comment_content">
+        <div class="content">
+          <p style="color:rgba(145, 145, 145, 0.767)">
+            {{r.comment_name[index]}}
+          </p>
+
+          <p>
+            {{comment}}
+          </p>
+        </div>
+        <div v-if="r.comment_email[index] === current_email" class="level-item">
+            <button @click="delete_comment(r._idx, index)" class="button is-danger"> <i class="fa fa-trash fa-2x"></i></button>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
 
@@ -88,6 +124,8 @@
   let add_post_url = "[[=XML(add_post_url)]]";
   let modify_post_url = "[[=XML(modify_post_url)]]";
   let delete_post_url = "[[=XML(delete_post_url)]]";
+  let add_comment_url = "[[=XML(add_comment_url)]]";
+  let delete_comment_url = "[[=XML(delete_comment_url)]]";
   let my_callback_url = "[[=XML(my_callback_url)]]";
 </script>
 <script src="js/index.js"></script>

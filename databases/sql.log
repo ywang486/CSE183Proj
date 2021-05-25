@@ -88,3 +88,40 @@ success!
 success!
 success!
 success!
+success!
+success!
+timestamp: 2021-05-25T08:54:36.305841
+ALTER TABLE "post" ADD "comment_content" TEXT;
+timestamp: 2021-05-25T08:54:36.308898
+ALTER TABLE "post" ADD "comment_name" TEXT;
+timestamp: 2021-05-25T08:54:36.311201
+ALTER TABLE "post" ADD "comment_email" TEXT;
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2021-05-25T13:53:46.307459
+ALTER TABLE "post" ADD "user_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ;
+success!
+success!
