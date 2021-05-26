@@ -125,3 +125,4 @@ timestamp: 2021-05-25T13:53:46.307459
 ALTER TABLE "post" ADD "user_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ;
 success!
 success!
+success!
