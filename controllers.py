@@ -59,6 +59,16 @@ def load_posts():
     rows = db(db.post).select().as_list()
     r = db(db.auth_user.email == get_user_email()).select().first()
     email = r.email if r is not None else "Unknown"
+    print(r)
+    inUserTable = db(db.user.reference_auth_user == r.id).select().first()
+    print(inUserTable)
+    if inUserTable is None and email != "Unknown":
+        nofollowersorfollowingyet = []
+        db.user.insert(
+            reference_auth_user=r.id,
+            followers=nofollowersorfollowingyet,
+            following=nofollowersorfollowingyet,
+        )
     return dict(
         rows=rows,
         email=email,
@@ -197,5 +207,17 @@ def profile(user_id=None):
 @action.uses()
 def search():
     q = request.params.get("q")
-    results = [q + ":" + str(uuid.uuid1()) for _ in range(random.randint(2, 6))]
+    results = []
+    # print(db(db.user).select().as_list())
+    users = db(db.user).select().as_list()
+    for user in users:
+        # auth_user = db(db.auth_user).select().as_list()
+        auth_user = db(db.auth_user.id == user["reference_auth_user"]).select().first()
+        name = auth_user.first_name + " " + auth_user.last_name
+        if q.lower() in name.lower():
+            nameandphoto = []
+            nameandphoto.append(name)
+            nameandphoto.append(user["profile_image_url"])
+            results.append(nameandphoto)
+    # results = [q + ":" + str(uuid.uuid1()) for _ in range(random.randint(2, 6))]
     return dict(results=results)
