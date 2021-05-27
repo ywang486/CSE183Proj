@@ -136,3 +136,18 @@ success!
 success!
 success!
 success!
+timestamp: 2021-05-27T09:49:47.560309
+CREATE TABLE "user"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "reference_auth_user" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "followers" TEXT,
+    "following" TEXT
+);
+success!
+success!
+timestamp: 2021-05-27T09:53:39.664357
+ALTER TABLE "user" ADD "profile_image_url" CHAR(512);
+success!
+success!
+success!
+success!

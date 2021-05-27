@@ -31,11 +31,16 @@ from .common import db, session, T, cache, auth, logger, authenticated, unauthen
 from py4web.utils.url_signer import URLSigner
 from .models import get_user_email
 
+import uuid
+import random
+
 url_signer = URLSigner(session)
 
 @action('index')
 @action.uses(db, auth.user, 'index.html')
 def index():
+    # if auth_user id is not in user table:
+    #   create new row in user table
     return dict(
         # COMPLETE: return here any signed URLs you need.
         my_callback_url=URL('my_callback', signer=url_signer),
@@ -45,6 +50,7 @@ def index():
         delete_post_url=URL('delete_post', signer=url_signer),
         add_comment_url=URL('add_comment', signer=url_signer),
         delete_comment_url=URL('delete_comment', signer=url_signer),
+        search_url=URL('search', signer=url_signer),
     )
 
 @action('load_posts')
@@ -186,3 +192,10 @@ def profile(user_id=None):
         rows =rows,
         user = user,
     )
+
+@action('search')
+@action.uses()
+def search():
+    q = request.params.get("q")
+    results = [q + ":" + str(uuid.uuid1()) for _ in range(random.randint(2, 6))]
+    return dict(results=results)
