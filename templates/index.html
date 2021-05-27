@@ -52,11 +52,6 @@
         <!-- Left side -->
         <div class="level-left">
           <div class="level-item">
-            <div class="container block">
-              <button @click="set_add_comment_status(r._idx, true)" class="button is-primary">
-                <i class="fa fa-comment fa-fw"></i>
-              </button>
-            </div>
             <span @mouseleave="show_likers_out(r._idx)">
               <span @mouseenter="show_likers_over(r._idx)">
                 <span>
@@ -82,23 +77,6 @@
           </div>
         </div>
       </nav>
-
-      <div class="box" style="background-color:rgba(241, 239, 239, 0.418);" v-for="(comment, index) in r.comment_content">
-        <div class="content">
-          <p style="color:rgba(145, 145, 145, 0.767)">
-            {{r.comment_name[index]}}
-          </p>
-
-          <p>
-            {{comment}}
-          </p>
-        </div>
-        <div class="level-right">
-          <div v-if="r.comment_email[index] === current_email" class="level-item">
-            <button @click="delete_comment(r._idx, index)" class="button is-danger"> <i class="fa fa-trash fa-2x"></i></button>
-        </div>
-        </div>
-      </div>
       <div class="container block">
         <button @click="set_add_comment_status(r._idx, true)" class="button is-primary">
           <i class="fa fa-comment fa-fw"></i>
