@@ -29,6 +29,7 @@ db.define_table('post',
                 Field('comment_email', 'list:string'),
                 Field('dislikes', 'list:string'),
                 Field('likes', 'list:string'),
+                Field('user_id', 'reference auth_user'),
                 )
 
 db.commit()

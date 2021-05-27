@@ -172,4 +172,17 @@ def delete_comment():
         comment_name=post['comment_name'],
         comment_email=post['comment_email']
     )
-    return "ok"
+
+
+#Johnson's edit for making Profile Page
+@action('profile/<user_id:int>')
+@action.uses(db, auth.user, 'profile.html')
+def profile(user_id=None):
+    assert user_id is not None
+    user = db(db.auth_user.id == user_id).select().first()
+    rows = db(db.post.email == user["email"]).select().as_list()
+
+    return dict(
+        rows =rows,
+        user = user,
+    )

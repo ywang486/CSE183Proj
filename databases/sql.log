@@ -120,3 +120,18 @@ success!
 success!
 success!
 success!
+<<<<<<< HEAD
+=======
+success!
+timestamp: 2021-05-25T13:53:46.307459
+ALTER TABLE "post" ADD "user_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ;
+success!
+success!
+success!
+>>>>>>> 1cd181bb4ad46f5e6457c7fb49a1b646aa3151c7
+timestamp: 2021-05-27T09:41:34.048450
+ALTER TABLE "post" ADD "user_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ;
+success!
+success!
+success!
+success!
