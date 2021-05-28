@@ -24,7 +24,7 @@ db.define_table('user',
                 Field('reference_auth_user', 'reference auth_user'),
                 Field('followers', 'list:string'),
                 Field('following', 'list:string'),
-                Field('profile_image_url')
+                Field('profile_image_url'),
                 )
 
 db.define_table('post',

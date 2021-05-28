@@ -169,3 +169,17 @@ success!
 success!
 success!
 success!
+success!
+timestamp: 2021-05-27T21:23:33.391533
+CREATE TABLE "profile"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "reference_auth_user" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "followers" TEXT,
+    "following" TEXT,
+    "profile_image_url" CHAR(512)
+);
+success!
+success!
+success!
+success!
+success!

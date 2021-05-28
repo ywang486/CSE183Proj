@@ -85,12 +85,7 @@
           </div>
         </div>
       </nav>
-      <div class="container block">
-        <button @click="set_add_comment_status(r._idx, true)" class="button is-primary">
-          <i class="fa fa-comment fa-fw"></i>
-          Add a Comment
-        </button>
-      </div>
+
       <div v-if="r.add_comment_mode" class = "container block">
         <div class="form">
           <div class="field">
@@ -121,6 +116,17 @@
             <button @click="delete_comment(r._idx, index)" class="button is-danger"> <i class="fa fa-trash fa-2x"></i></button>
         </div>
       </div>
+      <nav class="level">
+        <div class="level-left">
+          <div class="container block">
+            <button @click="set_add_comment_status(r._idx, true)" class="button is-primary">
+              <i class="fa fa-comment fa-fw"></i>
+              Add a Comment
+            </button>
+          </div>
+        </div>
+      </nav>
+
     </div>
   </div>
 </div>

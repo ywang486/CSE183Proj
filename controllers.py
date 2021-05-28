@@ -59,9 +59,9 @@ def load_posts():
     rows = db(db.post).select().as_list()
     r = db(db.auth_user.email == get_user_email()).select().first()
     email = r.email if r is not None else "Unknown"
-    print(r)
+    # print(r)
     inUserTable = db(db.user.reference_auth_user == r.id).select().first()
-    print(inUserTable)
+    # print(inUserTable)
     if inUserTable is None and email != "Unknown":
         nofollowersorfollowingyet = []
         db.user.insert(
