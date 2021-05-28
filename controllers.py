@@ -214,6 +214,9 @@ def search():
             nameandphoto = []
             nameandphoto.append(name)
             nameandphoto.append(user["profile_image_url"])
+            nameandphoto.append(user["reference_auth_user"])
             results.append(nameandphoto)
+            
+
     #print(results = [q + ":" + str(uuid.uuid1()) for _ in range(random.randint(2, 6))])
     return dict(results=results)
