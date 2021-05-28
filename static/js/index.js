@@ -109,9 +109,11 @@ let init = (app) => {
             app.vue.rows[row_idx].comment_content = app.vue.rows[row_idx].comment_content || [];
             app.vue.rows[row_idx].comment_name = app.vue.rows[row_idx].comment_name || [];
             app.vue.rows[row_idx].comment_email = app.vue.rows[row_idx].comment_email || [];
+            app.vue.rows[row_idx].comment_authuserid = app.vue.rows[row_idx].comment_authuserid || [];
             app.vue.rows[row_idx].comment_content.push(app.vue.rows[row_idx].add_comment_content);
             app.vue.rows[row_idx].comment_name.push(response.data.comment_name);
             app.vue.rows[row_idx].comment_email.push(response.data.comment_email);
+            app.vue.rows[row_idx].comment_authuserid.push(response.data.comment_authuserid);
             app.enumerate(app.vue.rows);
             app.vue.rows[row_idx].add_comment_content = "";
             app.set_add_comment_status(row_idx, false);
@@ -128,6 +130,7 @@ let init = (app) => {
                             app.vue.rows[i].comment_content.splice(j, 1);
                             app.vue.rows[i].comment_email.splice(j, 1);
                             app.vue.rows[i].comment_name.splice(j, 1);
+                            app.vue.rows[i].comment_authuserid.splice(j, 1);
                             app.enumerate(app.vue.rows);
                             break;
                         }

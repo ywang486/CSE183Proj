@@ -99,7 +99,9 @@
       <div class="box" style="background-color:rgba(241, 239, 239, 0.418);" v-for="(comment, index) in r.comment_content">
         <div class="content">
           <p style="color:rgba(145, 145, 145, 0.767)">
-            {{r.comment_name[index]}}
+            <a class="button" :href="'[[=URL('profile') ]]' + '/' + r.comment_authuserid[index]">
+              {{r.comment_name[index]}}
+            </a>
           </p>
 
           <p>

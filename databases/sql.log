@@ -150,3 +150,6 @@ success!
 success!
 success!
 success!
+timestamp: 2021-05-28T15:48:12.439012
+ALTER TABLE "post" ADD "comment_authuserid" TEXT;
+success!

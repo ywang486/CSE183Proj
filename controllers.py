@@ -147,19 +147,23 @@ def add_comment():
         post['comment_content'].append(comment_content)
         post['comment_name'].append(name)
         post['comment_email'].append(email)
+        post['comment_authuserid'].append(r.id)
     else:
         post['comment_content'] = [comment_content]
         post['comment_name'] = [name]
         post['comment_email'] = [email]
+        post['comment_authuserid'] = [r.id]
     db.post.update_or_insert(
         (db.post.id == id),
         comment_content=post['comment_content'],
         comment_name=post['comment_name'],
-        comment_email=post['comment_email']
+        comment_email=post['comment_email'],
+        comment_authuserid = post['comment_authuserid'],
     )
     return dict(
         comment_name=name,
         comment_email=email,
+        comment_authuserid=r.id,
     )
 
 @action('delete_comment')
@@ -177,11 +181,13 @@ def delete_comment():
             del post['comment_content'][i]
             del post['comment_name'][i]
             del post['comment_email'][i]
+            del post['comment_authuserid'][i]
     db.post.update_or_insert(
         (db.post.id == row_id),
         comment_content=post['comment_content'],
         comment_name=post['comment_name'],
-        comment_email=post['comment_email']
+        comment_email=post['comment_email'],
+        comment_authuserid=post['comment_authuserid'],
     )
     return "ok"
 
