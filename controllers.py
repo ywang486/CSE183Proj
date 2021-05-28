@@ -31,16 +31,12 @@ from .common import db, session, T, cache, auth, logger, authenticated, unauthen
 from py4web.utils.url_signer import URLSigner
 from .models import get_user_email
 
-import uuid
-import random
 
 url_signer = URLSigner(session)
 
 @action('index')
 @action.uses(db, auth.user, 'index.html')
 def index():
-    # if auth_user id is not in user table:
-    #   create new row in user table
     return dict(
         # COMPLETE: return here any signed URLs you need.
         my_callback_url=URL('my_callback', signer=url_signer),
@@ -59,7 +55,6 @@ def load_posts():
     rows = db(db.post).select().as_list()
     r = db(db.auth_user.email == get_user_email()).select().first()
     email = r.email if r is not None else "Unknown"
-    # print(r)
     inUserTable = db(db.user.reference_auth_user == r.id).select().first()
     # print(inUserTable)
     if inUserTable is None and email != "Unknown":
@@ -88,11 +83,14 @@ def add_post():
         email=email,
         likes=nolikesordislikesyet,
         dislikes=nolikesordislikesyet,
+        user_id = r.id,
     )
+    print(r.id)
     return dict(
         id=id,
         name=name,
         email=email,
+        user_id = r.id
     )
 
 @action('modify_post', method='POST')
@@ -129,8 +127,6 @@ def modify_post():
         dislikes=dislikes,
     )
 
-
-
 @action('delete_post')
 @action.uses(url_signer.verify(), auth.user, db)
 def delete_post():
@@ -152,19 +148,23 @@ def add_comment():
         post['comment_content'].append(comment_content)
         post['comment_name'].append(name)
         post['comment_email'].append(email)
+        post['comment_authuserid'].append(r.id)
     else:
         post['comment_content'] = [comment_content]
         post['comment_name'] = [name]
         post['comment_email'] = [email]
+        post['comment_authuserid'] = [r.id]
     db.post.update_or_insert(
         (db.post.id == id),
         comment_content=post['comment_content'],
         comment_name=post['comment_name'],
-        comment_email=post['comment_email']
+        comment_email=post['comment_email'],
+        comment_authuserid = post['comment_authuserid'],
     )
     return dict(
         comment_name=name,
         comment_email=email,
+        comment_authuserid=r.id,
     )
 
 @action('delete_comment')
@@ -182,12 +182,15 @@ def delete_comment():
             del post['comment_content'][i]
             del post['comment_name'][i]
             del post['comment_email'][i]
+            del post['comment_authuserid'][i]
     db.post.update_or_insert(
         (db.post.id == row_id),
         comment_content=post['comment_content'],
         comment_name=post['comment_name'],
-        comment_email=post['comment_email']
+        comment_email=post['comment_email'],
+        comment_authuserid=post['comment_authuserid'],
     )
+    return "ok"
 
 
 #Johnson's edit for making Profile Page
@@ -218,6 +221,9 @@ def search():
             nameandphoto = []
             nameandphoto.append(name)
             nameandphoto.append(user["profile_image_url"])
+            nameandphoto.append(user["reference_auth_user"])
             results.append(nameandphoto)
-    # results = [q + ":" + str(uuid.uuid1()) for _ in range(random.randint(2, 6))]
+            
+
+    #print(results = [q + ":" + str(uuid.uuid1()) for _ in range(random.randint(2, 6))])
     return dict(results=results)

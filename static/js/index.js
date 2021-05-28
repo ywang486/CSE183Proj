@@ -38,6 +38,7 @@ let init = (app) => {
                 email: response.data.email,
                 likes: response.data.likes,
                 dislikes: response.data.dislikes,
+                user_id: response.data.user_id,
                 thumbs_down: false,
                 thumbs_up: false,
                 show_likers: false,
@@ -108,9 +109,11 @@ let init = (app) => {
             app.vue.rows[row_idx].comment_content = app.vue.rows[row_idx].comment_content || [];
             app.vue.rows[row_idx].comment_name = app.vue.rows[row_idx].comment_name || [];
             app.vue.rows[row_idx].comment_email = app.vue.rows[row_idx].comment_email || [];
+            app.vue.rows[row_idx].comment_authuserid = app.vue.rows[row_idx].comment_authuserid || [];
             app.vue.rows[row_idx].comment_content.push(app.vue.rows[row_idx].add_comment_content);
             app.vue.rows[row_idx].comment_name.push(response.data.comment_name);
             app.vue.rows[row_idx].comment_email.push(response.data.comment_email);
+            app.vue.rows[row_idx].comment_authuserid.push(response.data.comment_authuserid);
             app.enumerate(app.vue.rows);
             app.vue.rows[row_idx].add_comment_content = "";
             app.set_add_comment_status(row_idx, false);
@@ -127,6 +130,7 @@ let init = (app) => {
                             app.vue.rows[i].comment_content.splice(j, 1);
                             app.vue.rows[i].comment_email.splice(j, 1);
                             app.vue.rows[i].comment_name.splice(j, 1);
+                            app.vue.rows[i].comment_authuserid.splice(j, 1);
                             app.enumerate(app.vue.rows);
                             break;
                         }
@@ -149,7 +153,7 @@ let init = (app) => {
         } else {
             app.vue.results = [];
         }
-    }
+    };
 
     // This contains all the methods.
     app.methods = {
@@ -163,7 +167,6 @@ let init = (app) => {
         add_comment: app.add_comment,
         delete_comment: app.delete_comment,
         search: app.search,
-
         // Complete as you see fit.
     };
 
