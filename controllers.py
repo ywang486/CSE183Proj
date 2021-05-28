@@ -83,11 +83,13 @@ def add_post():
         email=email,
         likes=nolikesordislikesyet,
         dislikes=nolikesordislikesyet,
+        user_id = r.id,
     )
     return dict(
         id=id,
         name=name,
         email=email,
+        user_id = r.id
     )
 
 @action('modify_post', method='POST')
@@ -123,8 +125,6 @@ def modify_post():
         likes=likes,
         dislikes=dislikes,
     )
-
-
 
 @action('delete_post')
 @action.uses(url_signer.verify(), auth.user, db)

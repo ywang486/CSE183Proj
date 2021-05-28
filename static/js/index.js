@@ -38,6 +38,7 @@ let init = (app) => {
                 email: response.data.email,
                 likes: response.data.likes,
                 dislikes: response.data.dislikes,
+                user_id: response.data.user_id,
                 thumbs_down: false,
                 thumbs_up: false,
                 show_likers: false,
