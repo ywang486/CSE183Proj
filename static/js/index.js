@@ -14,6 +14,9 @@ let init = (app) => {
         add_content: "",
         current_email: "",
         rows: [],
+
+        query: "",
+        results: [],
     };
 
     app.enumerate = (a) => {
@@ -137,6 +140,17 @@ let init = (app) => {
         Vue.set(app.vue.rows[row_idx], 'add_comment_mode', new_status);
     };
 
+    app.search = function () {
+        if (app.vue.query.length > 0) {
+            axios.get(search_url, {params: {q: app.vue.query}})
+                .then(function (result) {
+                    app.vue.results = result.data.results;
+                });
+        } else {
+            app.vue.results = [];
+        }
+    };
+
     // This contains all the methods.
     app.methods = {
         set_add_status: app.set_add_status,
@@ -148,7 +162,7 @@ let init = (app) => {
         set_add_comment_status: app.set_add_comment_status,
         add_comment: app.add_comment,
         delete_comment: app.delete_comment,
-
+        search: app.search,
         // Complete as you see fit.
     };
 

@@ -126,3 +126,19 @@ ALTER TABLE "post" ADD "user_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE
 success!
 success!
 success!
+success!
+success!
+success!
+timestamp: 2021-05-28T13:24:59.436255
+CREATE TABLE "user"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "reference_auth_user" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
+    "followers" TEXT,
+    "following" TEXT,
+    "profile_image_url" CHAR(512)
+);
+success!
+success!
+success!
+success!
+success!

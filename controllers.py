@@ -31,6 +31,7 @@ from .common import db, session, T, cache, auth, logger, authenticated, unauthen
 from py4web.utils.url_signer import URLSigner
 from .models import get_user_email
 
+
 url_signer = URLSigner(session)
 
 @action('index')
@@ -45,6 +46,7 @@ def index():
         delete_post_url=URL('delete_post', signer=url_signer),
         add_comment_url=URL('add_comment', signer=url_signer),
         delete_comment_url=URL('delete_comment', signer=url_signer),
+        search_url=URL('search', signer=url_signer),
     )
 
 @action('load_posts')
@@ -53,6 +55,15 @@ def load_posts():
     rows = db(db.post).select().as_list()
     r = db(db.auth_user.email == get_user_email()).select().first()
     email = r.email if r is not None else "Unknown"
+    inUserTable = db(db.user.reference_auth_user == r.id).select().first()
+    # print(inUserTable)
+    if inUserTable is None and email != "Unknown":
+        nofollowersorfollowingyet = []
+        db.user.insert(
+            reference_auth_user=r.id,
+            followers=nofollowersorfollowingyet,
+            following=nofollowersorfollowingyet,
+        )
     return dict(
         rows=rows,
         email=email,
@@ -187,3 +198,22 @@ def profile(user_id=None):
         rows =rows,
         user = user,
     )
+
+@action('search')
+@action.uses()
+def search():
+    q = request.params.get("q")
+    results = []
+    # print(db(db.user).select().as_list())
+    users = db(db.user).select().as_list()
+    for user in users:
+        # auth_user = db(db.auth_user).select().as_list()
+        auth_user = db(db.auth_user.id == user["reference_auth_user"]).select().first()
+        name = auth_user.first_name + " " + auth_user.last_name
+        if q.lower() in name.lower():
+            nameandphoto = []
+            nameandphoto.append(name)
+            nameandphoto.append(user["profile_image_url"])
+            results.append(nameandphoto)
+    #print(results = [q + ":" + str(uuid.uuid1()) for _ in range(random.randint(2, 6))])
+    return dict(results=results)

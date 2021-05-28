@@ -20,6 +20,13 @@ def get_time():
 # db.define_table('thing', Field('name'))
 #
 ## always commit your models to avoid problems later
+db.define_table('user',
+                Field('reference_auth_user', 'reference auth_user'),
+                Field('followers', 'list:string'),
+                Field('following', 'list:string'),
+                Field('profile_image_url'),
+                )
+
 db.define_table('post',
                 Field('content'),
                 Field('name'),
