@@ -3,7 +3,17 @@
 <div class="section">
   <!-- Put the table here -->
   <p class="title is-1"> [[=user.first_name]] [[=user.last_name]]'s Profile</p>
-
+  <nav class="level">
+    <div class="level-left">
+      <span>
+        <button class="button is-info is-rounded">Follow</button>
+        <button class="button is-rounded">Following</button>
+  
+        <i v-if="r.thumbs_down" @click="modify_post(r._idx, current_email, false, false)" ></i>
+        <i v-if="!r.thumbs_down" @click="modify_post(r._idx, current_email, false, true)"></i>
+      </span>
+    </div>
+  </nav>
   <nav class="level">
     <div class="level-item has-text-centered">
       <div>
@@ -30,61 +40,49 @@
       </div>
     </div>
   </nav>
-  <nav class="level">
-    <div class="level-item">
-      <span>
-        <button class="button is-info is-rounded">Follow</button>
-        <button class="button is-rounded">Following</button>
-  
-        <i v-if="r.thumbs_down" @click="modify_post(r._idx, current_email, false, false)" ></i>
-        <i v-if="!r.thumbs_down" @click="modify_post(r._idx, current_email, false, true)"></i>
-      </span>
-    </div>
-    <div class="level-item">
-      [[for r in rows:]]
-      <div class="box" style="background-color:rgba(224, 224, 224, 0.418);" v-for="r in rows.slice().reverse()">
-        <div class="media-content">
-          <div class="content">
-            <p style="color:rgba(145, 145, 145, 0.767)">
-              [[=r["name"] ]]
-            </p>
-    
-            <p>
-              [[=r["content"] ]]
-            </p>
-          </div>
-          <nav class="level">
-            <!-- Left side -->
-            <div class="level-left">
-              <div class="level-item"> 
-                <span @mouseleave="show_likers_out(r._idx)">
-                  <span @mouseenter="show_likers_over(r._idx)">
-                    <span>
-                      <i v-if="r.thumbs_up" @click="modify_post(r._idx, current_email, true, false)" class="fa fa-flip-horizontal fa-thumbs-up fa-2x"></i>
-                      <i v-if="!r.thumbs_up" @click="modify_post(r._idx, current_email, true, true)" class="fa fa-flip-horizontal fa-thumbs-o-up fa-2x"></i>
-                    </span>
-                    <span>
-                      <i v-if="r.thumbs_down" @click="modify_post(r._idx, current_email, false, false)" class="fa fa-thumbs-down fa-2x"></i>
-                      <i v-if="!r.thumbs_down" @click="modify_post(r._idx, current_email, false, true)" class="fa fa-thumbs-o-down fa-2x"></i>
-                    </span>
-                  </span>
-              </span>
-              </div>
-              <div>
-                <div v-if="r.show_likers">the likers of the post:  [[=r["likes"] ]]</div>
-                <div v-if="r.show_likers">the dislikers of the post:  [[=r["dislikes"] ]]</div>
-              </div>
-            </div>
-    
-            <div class = "level-right">
-              <div v-if="r.email === current_email" class="level-item">
-                <button @click="delete_post(r._idx)" class="button is-danger"> <i class="fa fa-trash fa-2x"></i></button>
-              </div>
-            </div>
-          </nav>
-        </div>
 
+    [[for r in rows:]]
+    <div class="box" style="background-color:rgba(224, 224, 224, 0.418);" v-for="r in rows.slice().reverse()">
+      <div class="media-content">
+        <div class="content">
+          <p style="color:rgba(145, 145, 145, 0.767)">
+            [[=r["name"] ]]
+          </p>
+  
+          <p>
+            [[=r["content"] ]]
+          </p>
+        </div>
+        <nav class="level">
+          <!-- Left side -->
+          <div class="level-left">
+            <div class="level-item"> 
+              <span @mouseleave="show_likers_out(r._idx)">
+                <span @mouseenter="show_likers_over(r._idx)">
+                  <span>
+                    <i v-if="r.thumbs_up" @click="modify_post(r._idx, current_email, true, false)" class="fa fa-flip-horizontal fa-thumbs-up fa-2x"></i>
+                    <i v-if="!r.thumbs_up" @click="modify_post(r._idx, current_email, true, true)" class="fa fa-flip-horizontal fa-thumbs-o-up fa-2x"></i>
+                  </span>
+                  <span>
+                    <i v-if="r.thumbs_down" @click="modify_post(r._idx, current_email, false, false)" class="fa fa-thumbs-down fa-2x"></i>
+                    <i v-if="!r.thumbs_down" @click="modify_post(r._idx, current_email, false, true)" class="fa fa-thumbs-o-down fa-2x"></i>
+                  </span>
+                </span>
+            </span>
+            </div>
+            <div>
+              <div v-if="r.show_likers">the likers of the post:  [[=r["likes"] ]]</div>
+              <div v-if="r.show_likers">the dislikers of the post:  [[=r["dislikes"] ]]</div>
+            </div>
+          </div>
+          <div class = "level-right">
+            <div v-if="r.email === current_email" class="level-item">
+              <button @click="delete_post(r._idx)" class="button is-danger"> <i class="fa fa-trash fa-2x"></i></button>
+            </div>
+          </div>
+        </nav>
+      </div>
     </div>
-  </nav>
-  [[pass]]
+    [[pass]]
+
 </div>
