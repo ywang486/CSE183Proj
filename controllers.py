@@ -73,7 +73,10 @@ def load_posts():
 @action('add_post', method="POST")
 @action.uses(url_signer.verify(), auth.user, db)
 def add_post():
+
     r = db(db.auth_user.email == get_user_email()).select().first()
+    print(r)
+    print(r.id)
     name = r.first_name + " " + r.last_name if r is not None else "Unknown"
     email = r.email if r is not None else "Unknown"
     nolikesordislikesyet = []
@@ -83,6 +86,7 @@ def add_post():
         email=email,
         likes=nolikesordislikesyet,
         dislikes=nolikesordislikesyet,
+        user_id=r.id,
     )
     return dict(
         id=id,
@@ -147,15 +151,18 @@ def add_comment():
         post['comment_content'].append(comment_content)
         post['comment_name'].append(name)
         post['comment_email'].append(email)
+        post['comment_authuserid'].append(r.id)
     else:
         post['comment_content'] = [comment_content]
         post['comment_name'] = [name]
         post['comment_email'] = [email]
+        post['comment_authuserid'] = [r.id]
     db.post.update_or_insert(
         (db.post.id == id),
         comment_content=post['comment_content'],
         comment_name=post['comment_name'],
-        comment_email=post['comment_email']
+        comment_email=post['comment_email'],
+        comment_authuserid=post['comment_authuserid'],
     )
     return dict(
         comment_name=name,
@@ -177,11 +184,13 @@ def delete_comment():
             del post['comment_content'][i]
             del post['comment_name'][i]
             del post['comment_email'][i]
+            del post['comment_authuserid'][i]
     db.post.update_or_insert(
         (db.post.id == row_id),
         comment_content=post['comment_content'],
         comment_name=post['comment_name'],
-        comment_email=post['comment_email']
+        comment_email=post['comment_email'],
+        comment_authuserid=post['comment_authuserid'],
     )
     return "ok"
 
