@@ -49,6 +49,32 @@ def index():
         search_url=URL('search', signer=url_signer),
     )
 
+#Johnson's edit for loading Profile Page
+@action('profile/<user_id:int>')
+@action.uses(db, auth.user, 'profile.html')
+def profile(user_id=None):
+    print("initial load in profile")
+    assert user_id is not None
+    user = db(db.auth_user.id == user_id).select().first()
+    rows = db(db.post.email == user["email"]).select().as_list()
+    print(f"user email in profile: {user.email}")
+
+    return dict(
+        rows = rows,
+        user = user,
+        email = user.email,
+        follow_user_url=URL('follow_user', signer=url_signer),
+        load_posts_url=URL('load_posts', signer=url_signer),
+        add_post_url=URL('add_post', signer=url_signer),
+        modify_post_url=URL('modify_post', signer=url_signer),
+        delete_post_url=URL('delete_post', signer=url_signer),
+        add_comment_url=URL('add_comment', signer=url_signer),
+        delete_comment_url=URL('delete_comment', signer=url_signer),
+        search_url=URL('search', signer=url_signer),
+    )
+
+
+
 @action('load_posts')
 @action.uses(url_signer.verify(),db)
 def load_posts():
@@ -63,6 +89,7 @@ def load_posts():
             reference_auth_user=r.id,
             followers=nofollowersorfollowingyet,
             following=nofollowersorfollowingyet,
+            email=r.email,
         )
     return dict(
         rows=rows,
@@ -192,21 +219,9 @@ def delete_comment():
     return "ok"
 
 
-#Johnson's edit for making Profile Page
-@action('profile/<user_id:int>')
-@action.uses(db, auth.user, 'profile.html')
-def profile(user_id=None):
-    assert user_id is not None
-    user = db(db.auth_user.id == user_id).select().first()
-    rows = db(db.post.email == user["email"]).select().as_list()
-
-    return dict(
-        rows =rows,
-        user = user,
-    )
-
+# Search bar
 @action('search')
-@action.uses()
+@action.uses(db)
 def search():
     q = request.params.get("q")
     results = []
@@ -222,7 +237,53 @@ def search():
             nameandphoto.append(user["profile_image_url"])
             nameandphoto.append(user["reference_auth_user"])
             results.append(nameandphoto)
-            
-
     #print(results = [q + ":" + str(uuid.uuid1()) for _ in range(random.randint(2, 6))])
     return dict(results=results)
+
+# follow user
+@action('follow_user', method='POST')
+@action.uses(db, auth.user)
+def follow_user():
+    print("in follow user function")
+    profile_to_follow = request.json.get('profile_email')
+    print(f"{profile_to_follow}")
+    print(f"currently logged in user: {get_user_email()}")
+
+    # grabbing correct DB tables to update
+    current_user = db(db.user.email == get_user_email()).select().first()
+    who_to_follow = db(db.user.email == profile_to_follow).select().first()
+
+    print(f"current user db: {current_user}")
+    print(f"who_to_follow db: {who_to_follow}")
+
+    b_list = current_user['following']
+    print(f"current user list:{b_list}")
+
+    if current_user["following"] is not None and who_to_follow["followers"] is not None:
+        current_user["following"].append(profile_to_follow)
+        who_to_follow["followers"].append(get_user_email())
+    else:
+        current_user["following"] = [profile_to_follow]
+        who_to_follow["followers"] = [get_user_email()]
+
+    # appending correct user to following/followers list
+    # current_user["following"].append(profile_to_follow)
+    # who_to_follow["followers"].append(get_user_email())
+
+    # update or insert currently logged in users following list
+    db.user.update_or_insert(
+        (db.user.email == get_user_email()),
+        following = current_user["following"]
+    )
+
+    # update or insert profile email's db
+    db.user.update_or_insert(
+        (db.user.email == profile_to_follow),
+        followers = who_to_follow["followers"]
+    )
+
+    return dict()
+
+
+    
+

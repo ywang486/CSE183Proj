@@ -13,6 +13,7 @@ let init = (app) => {
         add_mode: false,
         add_content: "",
         current_email: "",
+        user_to_follow: "",
         rows: [],
 
         query: "",
@@ -155,6 +156,14 @@ let init = (app) => {
         }
     };
 
+    app.follow_user = function (profile_email) {
+        console.log("in follow user");
+        console.log(profile_email)
+        axios.post(follow_user_url, {
+            profile_email: profile_email
+        });
+    };
+
     // This contains all the methods.
     app.methods = {
         set_add_status: app.set_add_status,
@@ -167,6 +176,7 @@ let init = (app) => {
         add_comment: app.add_comment,
         delete_comment: app.delete_comment,
         search: app.search,
+        follow_user: app.follow_user
         // Complete as you see fit.
     };
 
@@ -180,7 +190,7 @@ let init = (app) => {
     // And this initializes it.
     app.init = () => {
         // Put here any initialization code.
-        // Typically this is a server GET call to load the data.
+        // server GET call to load the posts
         axios.get(load_posts_url).then(function (response) {
             let temprows = app.enumerate(response.data.rows);
             app.vue.current_email = response.data.email;
@@ -201,6 +211,7 @@ let init = (app) => {
             }
             app.vue.rows = temprows;
         });
+
     };
 
     // Call to the initializer.
