@@ -1,22 +1,161 @@
 [[extend 'layout.html']]
 
-<div class="section">
-   <h1 class="title">Here are some Good Vibes</h1>
-   <a href="[[=URL('create_post')]]" class="button is-primary">Create a Post</a>
-   <table class="table is-striped is-fullwidth">
-      <tr>
-         <th>User Id</th>
-         <th>Creation Time</th>
-         <th>Content</th>
-         <th>type</th>
-      </tr>
-      [[for row in rows:]]
-      <tr>
-         <td>[[=row.user_id]]</td>
-         <td>[[=row.time]]</td>
-         <td>[[=row.note]]</td>
-         <td>[[=row.type]]</td>
-      </tr>
-      [[pass]]
-   </table>
+<style>
+[v-cloak] {
+     display: none;
+}
+</style>
+
+
+<div class="section" id="vue-target" v-cloak>
+  <!-- Put here your Vue.js template -->
+  <nav>
+    <div class="level-right">
+      <div class="control block">
+        <input class="input" type="text" v-model="query" @keyup="search" placeholder="Search for Users" style="width: 500px;" />
+      </div>
+    </div>
+    <div class="level-right" v-for="r in results">
+      <a class="button" :href="'[[=URL('profile') ]]' + '/' + r[2]">
+        {{r[0]}} 
+      </a>
+    </div>
+  </nav>
+  
+  <div class="container block">
+    <h1 class="title">Good Vibez</h1>
+  </div>
+  
+  <div class="container block">
+    <button @click="set_add_status(true)" class="button is-primary">
+      <i class="fa fa-plus fa-fw"></i>
+      Create a New Post
+    </button>
+  </div>
+  
+
+  <div v-if="add_mode" class = "container block">
+    <div class="form">
+      <div class="field">
+        <label class="label"></label>
+        <div class="control">
+          <textarea class="textarea input" v-model="add_content"></textarea>
+        </div>
+      </div>
+      <div class="field">
+        <div class="control">
+          <input type="submit" @click="add_post" value="Post" class="button is-primary">
+          <input type="submit" @click="set_add_status(false)" value="Cancel" class="button is-warning">
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+  <div class="box" style="background-color:rgba(224, 224, 224, 0.418);" v-for="r in rows.slice().reverse()">
+    <div class="media-content">
+      <div class="content">
+        <p style="color:rgba(145, 145, 145, 0.767)">
+          <a class="button" :href="'[[=URL('profile') ]]' + '/' + r.user_id">
+          {{r.name}}
+          </a>
+        </p>
+        
+        <p>
+          {{r.content}}
+        </p>
+      </div>
+      <nav class="level">
+        <!-- Left side -->
+        <div class="level-left">
+          <div class="level-item">
+            <span @mouseleave="show_likers_out(r._idx)">
+              <span @mouseenter="show_likers_over(r._idx)">
+                <span>
+                  <i v-if="r.thumbs_up" @click="modify_post(r._idx, current_email, true, false)" class="fa fa-flip-horizontal fa-thumbs-up fa-2x"></i>
+                  <i v-if="!r.thumbs_up" @click="modify_post(r._idx, current_email, true, true)" class="fa fa-flip-horizontal fa-thumbs-o-up fa-2x"></i>
+                </span>
+                <span>
+                  <i v-if="r.thumbs_down" @click="modify_post(r._idx, current_email, false, false)" class="fa fa-thumbs-down fa-2x"></i>
+                  <i v-if="!r.thumbs_down" @click="modify_post(r._idx, current_email, false, true)" class="fa fa-thumbs-o-down fa-2x"></i>
+                </span>
+              </span>
+            </span>
+          </div>
+          <div>
+            <div v-if="r.show_likers">the likers of the post:  {{r.likes}}</div>
+            <div v-if="r.show_likers">the dislikers of the post:  {{r.dislikes}}</div>
+          </div>
+        </div>
+
+        <div class = "level-right">
+          <div v-if="r.email === current_email" class="level-item">
+            <button @click="delete_post(r._idx)" class="button is-danger"> <i class="fa fa-trash fa-2x"></i></button>
+          </div>
+        </div>
+      </nav>
+
+     
+      <div class="box" style="background-color:rgba(241, 239, 239, 0.418);" v-for="(comment, index) in r.comment_content">
+        <div class="content">
+          <p style="color:rgba(145, 145, 145, 0.767)">
+            <a class="button" :href="'[[=URL('profile') ]]' + '/' + r.comment_authuserid[index]">
+              {{r.comment_name[index]}}
+            </a>
+          </p>
+
+          <p>
+            {{comment}}
+          </p>
+        </div>
+        <div class="level-right">
+          <div v-if="r.comment_email[index] === current_email" class="level-item">
+            <button @click="delete_comment(r._idx, index)" class="button is-danger"> <i class="fa fa-trash fa-2x"></i></button>
+        </div>
+        </div>
+      </div>
+      <nav class="level">
+        <div class="level-left">
+          <div class="container block">
+            <button @click="set_add_comment_status(r._idx, true)" class="button is-primary">
+              <i class="fa fa-comment fa-fw"></i>
+              Add a Comment
+            </button>
+          </div>
+        </div>
+      </nav>
+      <div v-if="r.add_comment_mode" class = "container block">
+        <div class="form">
+          <div class="field">
+            <label class="label"></label>
+            <div class="control">
+              <textarea class="textarea input" v-model="r.add_comment_content"></textarea>
+            </div>
+          </div>
+          <div class="field">
+            <div class="control">
+              <input type="submit" @click="add_comment(r._idx)" value="Comment" class="button is-primary">
+              <input type="submit" @click="set_add_comment_status(r._idx, false)" value="Cancel" class="button is-warning">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+
+
+[[block page_scripts]]
+<!-- Loads the index-specific js for Vue -->
+<script>
+  let load_posts_url = "[[=XML(load_posts_url)]]";
+  let add_post_url = "[[=XML(add_post_url)]]";
+  let modify_post_url = "[[=XML(modify_post_url)]]";
+  let delete_post_url = "[[=XML(delete_post_url)]]";
+  let add_comment_url = "[[=XML(add_comment_url)]]";
+  let delete_comment_url = "[[=XML(delete_comment_url)]]";
+  let search_url = "[[=XML(search_url)]]";
+</script>
+<script src="js/index.js"></script>
+[[end]]

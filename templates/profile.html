@@ -1,0 +1,110 @@
+[[extend "layout.html"]]
+<style>
+  [v-cloak] {
+       display: none;
+  }
+</style>
+
+<div class="section" id="vue-target">
+  <!-- Put the table here -->
+  <p class="title is-1"> [[=user_x.first_name]] [[=user_x.last_name]]'s Profile</p>
+  <nav class="level" v-if="current_email !== '[[=u_email]]' ">
+    <div class="level-left">
+      <span>
+        <button @click="follow_user( '[[=user_x.email]]' )" class="button is-info is-rounded" >Follow</button>
+      </span>
+      <span>
+        <button @click="unfollow_user( '[[=user_x.email]]' )" class="button is-rounded">Unfollow</button>
+        <!-- <i v-if="r.thumbs_down" @click="modify_post(r._idx, current_email, false, false)" ></i>
+        <i v-if="!r.thumbs_down" @click="modify_post(r._idx, current_email, false, true)"></i> -->
+      </span>
+    </div>
+  </nav>
+  <nav class="level">
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">Posts</p>
+        <p class="title">[[=num_rows]]</p>
+      </div>
+    </div>
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">Following</p>
+        <p class="title">[[=num_fing]]</p>
+      </div>
+    </div>
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">Followers</p>
+        <p class="title">[[=num_fer]]</p>
+      </div>
+    </div>
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">Likes</p>
+        <p class="title">789</p>
+      </div>
+    </div>
+  </nav>
+
+
+    <div class="box" style="background-color:rgba(224, 224, 224, 0.418);" v-for="r in rows.slice().reverse()" v-if="r.email === '[[=u_email]]' ">
+      <div class="media-content">
+        <div class="content">
+          <p style="color:rgba(145, 145, 145, 0.767)">
+            {{r.name}}
+          </p>
+  
+          <p>
+            {{r.content}}
+          </p>
+        </div>
+        <nav class="level">
+          <!-- Left side -->
+          <div class="level-left">
+            <div class="level-item"> 
+              <span @mouseleave="show_likers_out(r._idx)">
+                <span @mouseenter="show_likers_over(r._idx)">
+                  <span>
+                    <i v-if="r.thumbs_up" @click="modify_post(r._idx, current_email, true, false)" class="fa fa-flip-horizontal fa-thumbs-up fa-2x"></i>
+                    <i v-if="!r.thumbs_up" @click="modify_post(r._idx, current_email, true, true)" class="fa fa-flip-horizontal fa-thumbs-o-up fa-2x"></i>
+                  </span>
+                  <span>
+                    <i v-if="r.thumbs_down" @click="modify_post(r._idx, current_email, false, false)" class="fa fa-thumbs-down fa-2x"></i>
+                    <i v-if="!r.thumbs_down" @click="modify_post(r._idx, current_email, false, true)" class="fa fa-thumbs-o-down fa-2x"></i>
+                  </span>
+                </span>
+            </span>
+            </div>
+            <div>
+              <div v-if="r.show_likers">the likers of the post:  {{r.likes}}</div>
+              <div v-if="r.show_likers">the dislikers of the post:  {{r.dislikes}}</div>
+            </div>
+          </div>
+          <div class = "level-right">
+            <div v-if="r.email === current_email" class="level-item">
+              <button @click="delete_post(r._idx)" class="button is-danger"> <i class="fa fa-trash fa-2x"></i></button>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    [[pass]]
+
+</div>
+
+[[block page_scripts]]
+<script>
+  let load_posts_url = "[[=XML(load_posts_url)]]";
+  let add_post_url = "[[=XML(add_post_url)]]";
+  let modify_post_url = "[[=XML(modify_post_url)]]";
+  let delete_post_url = "[[=XML(delete_post_url)]]";
+  let add_comment_url = "[[=XML(add_comment_url)]]";
+  let delete_comment_url = "[[=XML(delete_comment_url)]]";
+  let search_url = "[[=XML(search_url)]]";
+  let follow_user_url = "[[=XML(follow_user_url)]]";
+  let unfollow_user_url = "[[=XML(unfollow_user_url)]]";
+
+</script>
+<script src="js/index.js"></script>
+[[end]]
