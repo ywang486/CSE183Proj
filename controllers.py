@@ -64,6 +64,7 @@ def profile(user_id=None):
         user = user,
         email = user.email,
         follow_user_url=URL('follow_user', signer=url_signer),
+        unfollow_user_url=URL('unfollow_user', signer=url_signer),
         load_posts_url=URL('load_posts', signer=url_signer),
         add_post_url=URL('add_post', signer=url_signer),
         modify_post_url=URL('modify_post', signer=url_signer),
@@ -244,20 +245,20 @@ def search():
 @action('follow_user', method='POST')
 @action.uses(db, auth.user)
 def follow_user():
-    print("in follow user function")
+    #print("in follow user function")
     profile_to_follow = request.json.get('profile_email')
-    print(f"{profile_to_follow}")
-    print(f"currently logged in user: {get_user_email()}")
+    #print(f"{profile_to_follow}")
+    #print(f"currently logged in user: {get_user_email()}")
 
     # grabbing correct DB tables to update
     current_user = db(db.user.email == get_user_email()).select().first()
     who_to_follow = db(db.user.email == profile_to_follow).select().first()
 
-    print(f"current user db: {current_user}")
-    print(f"who_to_follow db: {who_to_follow}")
+   #print(f"current user db: {current_user}")
+    #print(f"who_to_follow db: {who_to_follow}")
 
     b_list = current_user['following']
-    print(f"current user list:{b_list}")
+    #print(f"current user list:{b_list}")
 
     if current_user["following"] is not None and who_to_follow["followers"] is not None:
         current_user["following"].append(profile_to_follow)
@@ -285,5 +286,47 @@ def follow_user():
     return dict()
 
 
+
+@action('unfollow_user', method='POST')
+@action.uses(db, auth.user)
+def unfollow_user():
+    print("in unfollow user function")
+    profile_to_follow = request.json.get('profile_email')
+    print(f"{profile_to_follow}")
+    print(f"currently logged in user: {get_user_email()}")
+
+    # grabbing correct DB tables to update
+    current_user = db(db.user.email == get_user_email()).select().first()
+    who_to_follow = db(db.user.email == profile_to_follow).select().first()
+
+    print(f"current user db: {current_user}")
+    print(f"who_to_follow db: {who_to_follow}")
+
+    b_list = current_user['following']
+    print(f"current user list:{b_list}")
+
+    if current_user["following"] is not None and who_to_follow["followers"] is not None:
+        current_user["following"].remove(profile_to_follow)
+        who_to_follow["followers"].remove(get_user_email())
+    else:
+        current_user["following"] = [profile_to_follow]
+        who_to_follow["followers"] = [get_user_email()]
+
+    # appending correct user to following/followers list
+    # current_user["following"].append(profile_to_follow)
+    # who_to_follow["followers"].append(get_user_email())
+
+    # update or insert currently logged in users following list
+    db.user.update_or_insert(
+        (db.user.email == get_user_email()),
+        following = current_user["following"]
+    )
+
+    # update or insert profile email's db
+    db.user.update_or_insert(
+        (db.user.email == profile_to_follow),
+        followers = who_to_follow["followers"]
+    )
+    return dict()
     
 

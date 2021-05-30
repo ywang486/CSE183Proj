@@ -164,6 +164,14 @@ let init = (app) => {
         });
     };
 
+    app.unfollow_user = function (profile_email) {
+        console.log("in follow user");
+        console.log(profile_email)
+        axios.post(unfollow_user_url, {
+            profile_email: profile_email
+        });
+    };
+
     // This contains all the methods.
     app.methods = {
         set_add_status: app.set_add_status,
@@ -176,7 +184,8 @@ let init = (app) => {
         add_comment: app.add_comment,
         delete_comment: app.delete_comment,
         search: app.search,
-        follow_user: app.follow_user
+        follow_user: app.follow_user,
+        unfollow_user: app.unfollow_user,
         // Complete as you see fit.
     };
 
