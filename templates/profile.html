@@ -47,16 +47,16 @@
     </div>
   </nav>
 
-    [[for r in rows:]]
-    <div class="box" style="background-color:rgba(224, 224, 224, 0.418);" v-for="r in rows.slice().reverse()">
+
+    <div class="box" style="background-color:rgba(224, 224, 224, 0.418);" v-for="r in rows.slice().reverse()" v-if="r.email === '[[=email]]' ">
       <div class="media-content">
         <div class="content">
           <p style="color:rgba(145, 145, 145, 0.767)">
-            [[=r["name"] ]]
+            {{r.name}}
           </p>
   
           <p>
-            [[=r["content"] ]]
+            {{r.content}}
           </p>
         </div>
         <nav class="level">
@@ -77,8 +77,8 @@
             </span>
             </div>
             <div>
-              <div v-if="r.show_likers">the likers of the post:  [[=r["likes"] ]]</div>
-              <div v-if="r.show_likers">the dislikers of the post:  [[=r["dislikes"] ]]</div>
+              <div v-if="r.show_likers">the likers of the post:  {{r.likes}}</div>
+              <div v-if="r.show_likers">the dislikers of the post:  {{r.dislikes}}</div>
             </div>
           </div>
           <div class = "level-right">

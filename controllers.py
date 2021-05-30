@@ -290,20 +290,20 @@ def follow_user():
 @action('unfollow_user', method='POST')
 @action.uses(db, auth.user)
 def unfollow_user():
-    print("in unfollow user function")
+    #print("in unfollow user function")
     profile_to_follow = request.json.get('profile_email')
-    print(f"{profile_to_follow}")
-    print(f"currently logged in user: {get_user_email()}")
+    #print(f"{profile_to_follow}")
+    #print(f"currently logged in user: {get_user_email()}")
 
     # grabbing correct DB tables to update
     current_user = db(db.user.email == get_user_email()).select().first()
     who_to_follow = db(db.user.email == profile_to_follow).select().first()
 
-    print(f"current user db: {current_user}")
-    print(f"who_to_follow db: {who_to_follow}")
+    #print(f"current user db: {current_user}")
+    #print(f"who_to_follow db: {who_to_follow}")
 
     b_list = current_user['following']
-    print(f"current user list:{b_list}")
+    #print(f"current user list:{b_list}")
 
     if current_user["following"] is not None and who_to_follow["followers"] is not None:
         current_user["following"].remove(profile_to_follow)
