@@ -18,6 +18,7 @@ let init = (app) => {
 
         query: "",
         results: [],
+
     };
 
     app.enumerate = (a) => {
@@ -42,6 +43,7 @@ let init = (app) => {
                 user_id: response.data.user_id,
                 thumbs_down: false,
                 thumbs_up: false,
+                show_comment_mode: false,
                 show_likers: false,
             });
             app.enumerate(app.vue.rows);
@@ -89,6 +91,16 @@ let init = (app) => {
     app.set_add_status = function (new_status) {
         app.vue.add_mode = new_status;
 
+    };
+
+    app.set_show_comment_status = function (new_status, row_idx) {
+        let id = app.vue.rows[row_idx].id;
+        for (let i = 0; i < app.vue.rows.length; i++) {
+            if (app.vue.rows[i].id === id) {
+                app.vue.rows[i].show_comment_mode = new_status
+                break;
+            }
+        }
     };
 
     app.show_likers_over = function (row_idx) {
@@ -172,6 +184,8 @@ let init = (app) => {
         });
     };
 
+
+
     // This contains all the methods.
     app.methods = {
         set_add_status: app.set_add_status,
@@ -186,6 +200,7 @@ let init = (app) => {
         search: app.search,
         follow_user: app.follow_user,
         unfollow_user: app.unfollow_user,
+        set_show_comment_status: app.set_show_comment_status,
         // Complete as you see fit.
     };
 
@@ -206,6 +221,7 @@ let init = (app) => {
             for (let i = 0; i < temprows.length; i++){
                 temprows[i].show_likers = false;
                 temprows[i].add_comment_mode = false;
+                temprows[i].show_comment_mode = false;
                 temprows[i].add_comment_content = "";
                 if (temprows[i].likes !== undefined && temprows[i].likes.includes(app.vue.current_email)){
                     temprows[i].thumbs_up = true;

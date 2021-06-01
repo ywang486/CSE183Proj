@@ -88,6 +88,44 @@
           </div>
         </nav>
       </div>
+      <br>
+      <div v-if="!r.show_comment_mode">
+        <button @click="set_show_comment_status(true, r._idx)" class="button is-warning is-light">
+            <i class="fa fa-eye"></i>
+        </button>
+      </div>
+      <div v-if="r.show_comment_mode">
+        <div class="box" style="background-color:rgba(241, 239, 239, 0.418);" v-for="(comment, index) in r.comment_content">
+          <div class="content">
+            <p style="color:rgba(145, 145, 145, 0.767)">
+              <a class="button" :href="'[[=URL('profile') ]]' + '/' + r.comment_authuserid[index]">
+                {{r.comment_name[index]}}
+              </a>
+            </p>
+  
+            <p>
+              {{comment}}
+            </p>
+          </div>
+          
+          <div class="level-right">
+            <div v-if="r.comment_email[index] === current_email" class="level-item">
+              <button @click="delete_comment(r._idx, index)" class="button is-danger"> <i class="fa fa-trash fa-2x"></i></button>
+          </div>
+          </div>
+        </div>
+        <nav class="level">
+          <div class="level-left">
+            <div class="container block">
+              <button @click="set_show_comment_status(false, r._idx)" class="button is-danger is-light">
+                <i class="fa fa-eye-slash"></i>
+              </button>
+            </div>
+          </div>
+        </nav>
+      </div>
+      
+
     </div>
     [[pass]]
 

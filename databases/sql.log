@@ -216,3 +216,24 @@ success!
 success!
 success!
 success!
+success!
+timestamp: 2021-05-30T22:53:15.911729
+ALTER TABLE "user" ADD "profile_img" CHAR(512);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
