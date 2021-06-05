@@ -56,16 +56,16 @@ def profile(user_id=None):
     #print("initial load in profile")
     assert user_id is not None
     user_x = db(db.auth_user.id == user_id).select().first()
-    user_db = db(db.user.id == user_id).select().first()
+    user_db = db(db.user.reference_auth_user == user_id).select().first()
     rows = db(db.post.email == user_x["email"]).select().as_list()
     fing = []
     fer = []
     
-    #fing = user_db['following']
-    #fer = user_db['followers']
+    fing = user_db['following']
+    fer = user_db['followers']
 
-    num_fing = len(fing)
-    num_fer = len(fer)
+    num_fing = len(fing) -1 
+    num_fer = len(fer) -1
     num_rows = len(rows)
     #print(f"user email in profile: {user.email}")
 
@@ -99,6 +99,7 @@ def load_posts():
     # print(inUserTable)
     if inUserTable is None and email != "Unknown":
         nofollowersorfollowingyet = []
+        nofollowersorfollowingyet.append(email)
         db.user.insert(
             reference_auth_user=r.id,
             followers=nofollowersorfollowingyet,
