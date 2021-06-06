@@ -51,18 +51,41 @@ def index():
 
 #Johnson's edit for loading Profile Page
 @action('profile/<user_id:int>')
-@action.uses(db, auth.user, 'profile.html')
+@action.uses(db, auth, 'profile.html')
 def profile(user_id=None):
-    print("initial load in profile")
+    #print("initial load in profile")
     assert user_id is not None
-    user = db(db.auth_user.id == user_id).select().first()
-    rows = db(db.post.email == user["email"]).select().as_list()
-    print(f"user email in profile: {user.email}")
+    user_x = db(db.auth_user.id == user_id).select().first()
+    user_db = db(db.user.reference_auth_user == user_id).select().first()
+    rows = db(db.post.email == user_x["email"]).select().as_list()
+    fing = []
+    fer = []
+
+    profile_email = db(db.user.reference_auth_user == user_id).select().as_list()[0]['email']
+    print("\nprofile email\n", profile_email)
+    
+    fing = user_db['following']
+    fer = user_db['followers']
+
+    num_fing = len(fing) -1 
+    num_fer = len(fer) -1
+    num_rows = len(rows)
+    #print(f"user email in profile: {user.email}")
+    # print("following", fing)
+    # print("u_email", user_x.email)
+
+    db.user.update_or_insert(
+        (db.user.email == get_user_email()),
+        profile_email=profile_email
+    )
 
     return dict(
         rows = rows,
-        user = user,
-        email = user.email,
+        user_x = user_x,
+        u_email = user_x.email,
+        num_rows = num_rows,
+        num_fing = num_fing,
+        num_fer = num_fer,
         follow_user_url=URL('follow_user', signer=url_signer),
         unfollow_user_url=URL('unfollow_user', signer=url_signer),
         load_posts_url=URL('load_posts', signer=url_signer),
@@ -83,23 +106,31 @@ def load_posts():
     r = db(db.auth_user.email == get_user_email()).select().first()
     email = r.email if r is not None else "Unknown"
     inUserTable = db(db.user.reference_auth_user == r.id).select().first()
+    # following = inUserTable.as_list()
     # print(inUserTable)
     if inUserTable is None and email != "Unknown":
         nofollowersorfollowingyet = []
+        nofollowersorfollowingyet.append(email)
         db.user.insert(
             reference_auth_user=r.id,
             followers=nofollowersorfollowingyet,
             following=nofollowersorfollowingyet,
             email=r.email,
         )
+    following = db(db.user.reference_auth_user == r.id).select().as_list()[0]['following']
+    print("who i am following:\n", following)
+    # print("me:\n", db(db.user.reference_auth_user == r.id).select().as_list()[0])
+    profile_email = db(db.user.reference_auth_user == r.id).select().as_list()[0]['profile_email']
     return dict(
         rows=rows,
         email=email,
+        following=following,
+        profile_email=profile_email,
     )
 
 
 @action('add_post', method="POST")
-@action.uses(url_signer.verify(), auth.user, db)
+@action.uses(url_signer.verify(), auth , db)
 def add_post():
     r = db(db.auth_user.email == get_user_email()).select().first()
     name = r.first_name + " " + r.last_name if r is not None else "Unknown"
@@ -121,7 +152,7 @@ def add_post():
     )
 
 @action('modify_post', method='POST')
-@action.uses(url_signer.verify(), auth.user, db)
+@action.uses(url_signer.verify(), auth, db)
 def modify_post():
     id = request.json.get('id')
     like = request.json.get('like')

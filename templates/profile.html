@@ -7,14 +7,14 @@
 
 <div class="section" id="vue-target">
   <!-- Put the table here -->
-  <p class="title is-1"> [[=user.first_name]] [[=user.last_name]]'s Profile</p>
-  <nav class="level">
+  <p class="title is-1"> [[=user_x.first_name]] [[=user_x.last_name]]'s Profile</p>
+  <nav class="level" v-if="current_email !== '[[=u_email]]' ">
     <div class="level-left">
-      <span>
-        <button @click="follow_user( '[[=user.email]]' )" class="button is-info is-rounded" >Follow</button>
+      <span v-if="!following.includes(profile_email)">
+        <button @click="follow_user( '[[=user_x.email]]' )" class="button is-info is-rounded" >Follow</button>
       </span>
-      <span>
-        <button @click="unfollow_user( '[[=user.email]]' )" class="button is-rounded">Unfollow</button>
+      <span v-if="following.includes(profile_email)">
+        <button @click="unfollow_user( '[[=user_x.email]]' )" class="button is-rounded">Unfollow</button>
         <!-- <i v-if="r.thumbs_down" @click="modify_post(r._idx, current_email, false, false)" ></i>
         <i v-if="!r.thumbs_down" @click="modify_post(r._idx, current_email, false, true)"></i> -->
       </span>
@@ -23,32 +23,32 @@
   <nav class="level">
     <div class="level-item has-text-centered">
       <div>
-        <p class="heading">Tweets</p>
-        <p class="title">3,456</p>
+        <p class="heading">Posts</p>
+        <p class="title">[[=num_rows]]</p>
       </div>
     </div>
     <div class="level-item has-text-centered">
       <div>
         <p class="heading">Following</p>
-        <p class="title">123</p>
+        <p class="title">[[=num_fing]]</p>
       </div>
     </div>
     <div class="level-item has-text-centered">
       <div>
         <p class="heading">Followers</p>
-        <p class="title">456K</p>
+        <p class="title">[[=num_fer]]</p>
       </div>
     </div>
-    <div class="level-item has-text-centered">
-      <div>
-        <p class="heading">Likes</p>
-        <p class="title">789</p>
-      </div>
-    </div>
+<!--    <div class="level-item has-text-centered">-->
+<!--      <div>-->
+<!--        <p class="heading">Likes</p>-->
+<!--        <p class="title">789</p>-->
+<!--      </div>-->
+<!--    </div>-->
   </nav>
 
 
-    <div class="box" style="background-color:rgba(224, 224, 224, 0.418);" v-for="r in rows.slice().reverse()" v-if="r.email === '[[=email]]' ">
+    <div class="box" style="background-color:rgba(224, 224, 224, 0.418);" v-for="r in rows.slice().reverse()" v-if="r.email === '[[=u_email]]' ">
       <div class="media-content">
         <div class="content">
           <p style="color:rgba(145, 145, 145, 0.767)">
@@ -88,6 +88,44 @@
           </div>
         </nav>
       </div>
+      <br>
+      <div v-if="!r.show_comment_mode">
+        <button @click="set_show_comment_status(true, r._idx)" class="button is-warning is-light">
+            <i class="fa fa-eye"></i>
+        </button>
+      </div>
+      <div v-if="r.show_comment_mode">
+        <div class="box" style="background-color:rgba(241, 239, 239, 0.418);" v-for="(comment, index) in r.comment_content">
+          <div class="content">
+            <p style="color:rgba(145, 145, 145, 0.767)">
+              <a class="button" :href="'[[=URL('profile') ]]' + '/' + r.comment_authuserid[index]">
+                {{r.comment_name[index]}}
+              </a>
+            </p>
+  
+            <p>
+              {{comment}}
+            </p>
+          </div>
+          
+          <div class="level-right">
+            <div v-if="r.comment_email[index] === current_email" class="level-item">
+              <button @click="delete_comment(r._idx, index)" class="button is-danger"> <i class="fa fa-trash fa-2x"></i></button>
+          </div>
+          </div>
+        </div>
+        <nav class="level">
+          <div class="level-left">
+            <div class="container block">
+              <button @click="set_show_comment_status(false, r._idx)" class="button is-danger is-light">
+                <i class="fa fa-eye-slash"></i>
+              </button>
+            </div>
+          </div>
+        </nav>
+      </div>
+      
+
     </div>
     [[pass]]
 

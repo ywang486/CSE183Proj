@@ -26,6 +26,7 @@ db.define_table('user',
                 Field('following', 'list:string'),
                 Field('email'),
                 Field('profile_image_url'),
+                Field('profile_email'),
                 )
 
 db.define_table('post',

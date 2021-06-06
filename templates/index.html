@@ -29,7 +29,7 @@
   <div class="container block">
     <button @click="set_add_status(true)" class="button is-primary">
       <i class="fa fa-plus fa-fw"></i>
-      Create a New Post
+      Start a Conversation...
     </button>
   </div>
   
@@ -50,98 +50,125 @@
       </div>
     </div>
   </div>
-  
 
-  <div class="box" style="background-color:rgba(224, 224, 224, 0.418);" v-for="r in rows.slice().reverse()">
-    <div class="media-content">
-      <div class="content">
-        <p style="color:rgba(145, 145, 145, 0.767)">
-          <a class="button" :href="'[[=URL('profile') ]]' + '/' + r.user_id">
-          {{r.name}}
-          </a>
-        </p>
-        
-        <p>
-          {{r.content}}
-        </p>
-      </div>
-      <nav class="level">
-        <!-- Left side -->
-        <div class="level-left">
-          <div class="level-item">
-            <span @mouseleave="show_likers_out(r._idx)">
-              <span @mouseenter="show_likers_over(r._idx)">
-                <span>
-                  <i v-if="r.thumbs_up" @click="modify_post(r._idx, current_email, true, false)" class="fa fa-flip-horizontal fa-thumbs-up fa-2x"></i>
-                  <i v-if="!r.thumbs_up" @click="modify_post(r._idx, current_email, true, true)" class="fa fa-flip-horizontal fa-thumbs-o-up fa-2x"></i>
-                </span>
-                <span>
-                  <i v-if="r.thumbs_down" @click="modify_post(r._idx, current_email, false, false)" class="fa fa-thumbs-down fa-2x"></i>
-                  <i v-if="!r.thumbs_down" @click="modify_post(r._idx, current_email, false, true)" class="fa fa-thumbs-o-down fa-2x"></i>
-                </span>
-              </span>
-            </span>
-          </div>
-          <div>
-            <div v-if="r.show_likers">the likers of the post:  {{r.likes}}</div>
-            <div v-if="r.show_likers">the dislikers of the post:  {{r.dislikes}}</div>
-          </div>
-        </div>
+  <div class="tabs is-centered">
+    <li>
+      <li @click="set_show_all_posts_status(true)">
+        <a>Everybody</a>
+      </li>
+      <li @click="set_show_all_posts_status(false)"><a>Who I'm Following and Me</a></li>
+    </ul>
+  </div>
+        <div v-if="following.length === 1 && show_all_posts === false"> You're not following anybody. Search for Users to Follow!</div>
+        <div class="box" style="background-color:rgba(224, 224, 224, 0.418);" v-for="r in rows.slice().reverse()" v-if="following.includes(r.email) || show_all_posts === true">
 
-        <div class = "level-right">
-          <div v-if="r.email === current_email" class="level-item">
-            <button @click="delete_post(r._idx)" class="button is-danger"> <i class="fa fa-trash fa-2x"></i></button>
-          </div>
-        </div>
-      </nav>
+          <div  class="media-content" >
+            <div class="content">
+              <p style="color:rgba(145, 145, 145, 0.767)">
+                <a class="button" :href="'[[=URL('profile') ]]' + '/' + r.user_id">
+                {{r.name}}
+                </a>
+              </p>
 
-     
-      <div class="box" style="background-color:rgba(241, 239, 239, 0.418);" v-for="(comment, index) in r.comment_content">
-        <div class="content">
-          <p style="color:rgba(145, 145, 145, 0.767)">
-            <a class="button" :href="'[[=URL('profile') ]]' + '/' + r.comment_authuserid[index]">
-              {{r.comment_name[index]}}
-            </a>
-          </p>
+              <p>
+                {{r.content}}
+              </p>
+            </div>
+            <nav class="level">
+              <!-- Left side -->
+              <div class="level-left">
+                <div class="level-item">
+                  <span @mouseleave="show_likers_out(r._idx)">
+                    <span @mouseenter="show_likers_over(r._idx)">
+                      <span>
+                        <i v-if="r.thumbs_up" @click="modify_post(r._idx, current_email, true, false)" class="fa fa-flip-horizontal fa-thumbs-up fa-2x"></i>
+                        <i v-if="!r.thumbs_up" @click="modify_post(r._idx, current_email, true, true)" class="fa fa-flip-horizontal fa-thumbs-o-up fa-2x"></i>
+                      </span>
+                      <span>
+                        <i v-if="r.thumbs_down" @click="modify_post(r._idx, current_email, false, false)" class="fa fa-thumbs-down fa-2x"></i>
+                        <i v-if="!r.thumbs_down" @click="modify_post(r._idx, current_email, false, true)" class="fa fa-thumbs-o-down fa-2x"></i>
+                      </span>
+                    </span>
+                  </span>
+                </div>
+                <div>
+                  <div v-if="r.show_likers">the likers of the post:  {{r.likes}}</div>
+                  <div v-if="r.show_likers">the dislikers of the post:  {{r.dislikes}}</div>
+                </div>
+              </div>
 
-          <p>
-            {{comment}}
-          </p>
-        </div>
-        <div class="level-right">
-          <div v-if="r.comment_email[index] === current_email" class="level-item">
-            <button @click="delete_comment(r._idx, index)" class="button is-danger"> <i class="fa fa-trash fa-2x"></i></button>
-        </div>
-        </div>
-      </div>
-      <nav class="level">
-        <div class="level-left">
-          <div class="container block">
-            <button @click="set_add_comment_status(r._idx, true)" class="button is-primary">
-              <i class="fa fa-comment fa-fw"></i>
-              Add a Comment
+              <div class = "level-right">
+                <div v-if="r.email === current_email" class="level-item">
+                  <button @click="delete_post(r._idx)" class="button is-danger"> <i class="fa fa-trash fa-2x"></i></button>
+                </div>
+              </div>
+            </nav>
+
+          <div v-if="!r.show_comment_mode">
+            <button @click="set_show_comment_status(true, r._idx)" class="button is-warning is-light">
+                <i style="padding-right: 6px" class="fa fa-eye "></i>
+                Show comments
             </button>
           </div>
-        </div>
-      </nav>
-      <div v-if="r.add_comment_mode" class = "container block">
-        <div class="form">
-          <div class="field">
-            <label class="label"></label>
-            <div class="control">
-              <textarea class="textarea input" v-model="r.add_comment_content"></textarea>
+
+           <div v-if="r.show_comment_mode">
+            <div class="box" style="background-color:rgba(241, 239, 239, 0.418);" v-for="(comment, index) in r.comment_content">
+              <div class="content">
+                <p style="color:rgba(145, 145, 145, 0.767)">
+                  <a class="button" :href="'[[=URL('profile') ]]' + '/' + r.comment_authuserid[index]">
+                    {{r.comment_name[index]}}
+                  </a>
+                </p>
+
+                <p>
+                  {{comment}}
+                </p>
+              </div>
+              <div class="level-right">
+                <div v-if="r.comment_email[index] === current_email" class="level-item">
+                  <button @click="delete_comment(r._idx, index)" class="button is-danger"> <i class="fa fa-trash fa-2x"></i></button>
+              </div>
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <div class="control">
-              <input type="submit" @click="add_comment(r._idx)" value="Comment" class="button is-primary">
-              <input type="submit" @click="set_add_comment_status(r._idx, false)" value="Cancel" class="button is-warning">
+            <nav class="level">
+              <div class="level-left">
+                <div class="container block">
+                  <button @click="set_add_comment_status(r._idx, true)" class="button is-primary">
+                    <i class="fa fa-comment fa-fw"></i>
+                    Add a Comment
+                  </button>
+                </div>
+              </div>
+
+              <div class="level-right">
+                <button @click="set_show_comment_status(false, r._idx)" class="button is-danger is-light">
+                  <i style="padding-right: 6px" class="fa fa-eye-slash"></i>
+                  Hide comments
+                </button>
+              </div>
+
+            </nav>
+            <div v-if="r.add_comment_mode" class = "container block">
+              <div class="form">
+                <div class="field">
+                  <label class="label"></label>
+                  <div class="control">
+                    <textarea class="textarea input" v-model="r.add_comment_content"></textarea>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="control">
+                    <input type="submit" @click="add_comment(r._idx)" value="Comment" class="button is-primary">
+                    <input type="submit" @click="set_add_comment_status(r._idx, false)" value="Cancel" class="button is-warning">
+                  </div>
+                </div>
+              </div>
             </div>
+           </div>
+
           </div>
         </div>
-      </div>
-    </div>
-  </div>
+
 </div>
 
 

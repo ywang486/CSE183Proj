@@ -15,9 +15,13 @@ let init = (app) => {
         current_email: "",
         user_to_follow: "",
         rows: [],
-
         query: "",
         results: [],
+
+        // new data June 6th
+        following: [],
+        show_all_posts: false,
+        profile_email: "",
     };
 
     app.enumerate = (a) => {
@@ -42,6 +46,7 @@ let init = (app) => {
                 user_id: response.data.user_id,
                 thumbs_down: false,
                 thumbs_up: false,
+                show_comment_mode: false,
                 show_likers: false,
             });
             app.enumerate(app.vue.rows);
@@ -65,7 +70,7 @@ let init = (app) => {
         else if (like === true && add === false) app.vue.rows[row_idx].thumbs_up = false;
         else if (like === false && add === false) app.vue.rows[row_idx].thumbs_down = false;
         axios.post(modify_post_url, {id: id, like: like, add_to_list: add, email: email}).then(function (response){
-            console.log("modify likes and dislikes");
+            //console.log("modify likes and dislikes");
             app.vue.rows[row_idx].likes = response.data.likes;
             app.vue.rows[row_idx].dislikes = response.data.dislikes;
         });
@@ -91,6 +96,20 @@ let init = (app) => {
 
     };
 
+    app.set_show_all_posts_status = function (new_status) {
+        app.vue.show_all_posts = new_status;
+    };
+
+    app.set_show_comment_status = function (new_status, row_idx) {
+        let id = app.vue.rows[row_idx].id;
+        for (let i = 0; i < app.vue.rows.length; i++) {
+            if (app.vue.rows[i].id === id) {
+                app.vue.rows[i].show_comment_mode = new_status
+                break;
+            }
+        }
+    };
+
     app.show_likers_over = function (row_idx) {
         Vue.set(app.vue.rows[row_idx], 'show_likers', true);
     };
@@ -100,7 +119,7 @@ let init = (app) => {
      };
 
      app.add_comment = function (row_idx) {
-        console.log("in add comment");
+        //console.log("in add comment");
         let id = app.vue.rows[row_idx].id;
         axios.post(add_comment_url,
             {
@@ -157,20 +176,34 @@ let init = (app) => {
     };
 
     app.follow_user = function (profile_email) {
-        console.log("in follow user");
-        console.log(profile_email)
+        //console.log("in follow user");
+        //console.log(profile_email)'
+
+        console.log("before follow: ", app.vue.following);
+        app.vue.following.push(profile_email);
+        console.log("after follow: ", app.vue.following);
+
+
         axios.post(follow_user_url, {
             profile_email: profile_email
         });
     };
 
     app.unfollow_user = function (profile_email) {
-        console.log("in follow user");
-        console.log(profile_email)
+        //console.log("in follow user");
+        //console.log(profile_email)
+
+        console.log("before unfollow: ", app.vue.following);
+        const index = app.vue.following.indexOf(profile_email);
+        app.vue.following.splice(index, 1);
+        console.log("after unfollow: ", app.vue.following);
+
         axios.post(unfollow_user_url, {
             profile_email: profile_email
         });
     };
+
+
 
     // This contains all the methods.
     app.methods = {
@@ -186,6 +219,8 @@ let init = (app) => {
         search: app.search,
         follow_user: app.follow_user,
         unfollow_user: app.unfollow_user,
+        set_show_comment_status: app.set_show_comment_status,
+        set_show_all_posts_status: app.set_show_all_posts_status,
         // Complete as you see fit.
     };
 
@@ -203,9 +238,13 @@ let init = (app) => {
         axios.get(load_posts_url).then(function (response) {
             let temprows = app.enumerate(response.data.rows);
             app.vue.current_email = response.data.email;
+            app.vue.following = response.data.following;
+            app.vue.profile_email = response.data.profile_email;
+//            console.log("following: ", app.vue.following);
             for (let i = 0; i < temprows.length; i++){
                 temprows[i].show_likers = false;
                 temprows[i].add_comment_mode = false;
+                temprows[i].show_comment_mode = false;
                 temprows[i].add_comment_content = "";
                 if (temprows[i].likes !== undefined && temprows[i].likes.includes(app.vue.current_email)){
                     temprows[i].thumbs_up = true;

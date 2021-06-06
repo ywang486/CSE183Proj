@@ -11,11 +11,14 @@
   </head>
   <body>
     <!-- Navigation bar -->
-    <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+    <nav class="navbar is-info is-light" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
-        <a class="navbar-item" href="[[=URL('index')]]">
-          Learn py4web
+        <a class="navbar-item is-light fa fa-home fa-2x" href="[[=URL('index')]]">
+          Home Page
           <!-- <img class="logo" width="150" src="images/site_icon.png"> -->
+        </a>
+        <a class="navbar-item is-light fa fa-user fa-2x" href="[[=URL('profile') + '/']][[=globals().get('user').get('id')]]">
+          Your Profile
         </a>
 
 
